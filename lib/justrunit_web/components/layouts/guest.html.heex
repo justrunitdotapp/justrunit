@@ -1,0 +1,6 @@
+<nav class="flex justify-end m-2 gap-4">
+ <.link patch="/sign-in" class="border-2 border-blue-500 hover:border-blue-600 text-blue-500 px-4 py-2 rounded-lg font-medium hover:bg-blue-600  hover:text-white transition">Sign in</.link>
+ <.link patch="/sign-up" class="border-2 border-blue-500 hover:border-blue-600 bg-blue-500 px-4 text-white py-2 rounded-lg font-medium hover:bg-blue-600 transition">Register</.link>
+</nav>
+<.flash_group flash={@flash} />
+<%= @inner_content %>

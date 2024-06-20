@@ -1,0 +1,6 @@
+<nav class="flex justify-end space-x-4 mx-4 mt-2">
+ <.link patch="/settings" class=" bg-blue-500 text-white p-2 rounded-lg font-medium hover:bg-blue-600 transition p-2 border-2 border-blue-500 hover:border-blue-600 rounded-lg">Settings</.link>
+ <.link href={~p"/users/log_out"} method="delete" class="border-2 border-blue-500 text-blue-500 p-2 rounded-lg font-medium hover:bg-blue-600 hover:border-blue-600 hover:text-white transition">Log out</.link>
+</nav>
+<.flash_group flash={@flash} />
+<%= @inner_content %>
