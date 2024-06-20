@@ -5,7 +5,6 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
     only: [justboxes_list_component: 1]
 
   import JustrunitWeb.PaginationComponent, only: [pagination: 1]
-  import Flop
 
   def render(assigns) do
     ~H"""
