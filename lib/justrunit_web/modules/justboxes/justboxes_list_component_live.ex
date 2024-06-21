@@ -2,6 +2,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
   use Phoenix.Component
 
   attr :justboxes, :list, required: true
+  attr :user_handle, :string, required: true
 
   def justboxes_list_component(assigns) do
     ~H"""
@@ -9,6 +10,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
       <.justbox
         :for={{justbox, index} <- Enum.with_index(@justboxes)}
         name={justbox.name}
+        user_handle={@user_handle}
         last_changed={since_last_edit(justbox.updated_at)}
         is_last={is_last?(index, Enum.count(@justboxes))}
       />
@@ -55,7 +57,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
 
     ~H"""
     <div class="p-2 hover:bg-neutral-300 border-b border-gray-800 flex flex-row justify-between space-x-4">
-      <a href={"/justboxes/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
+      <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
       <p class="text-gray-600">Last updated <%= @last_changed %></p>
     </div>
     """
@@ -66,7 +68,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
 
     ~H"""
     <div class="p-2 hover:bg-neutral-300 flex flex-row justify-between space-x-4">
-      <a href={"/justboxes/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
+      <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
       <p class="text-gray-600">Last updated <%= @last_changed %></p>
     </div>
     """

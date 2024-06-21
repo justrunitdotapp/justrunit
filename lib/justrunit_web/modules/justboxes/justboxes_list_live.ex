@@ -19,10 +19,10 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
         </.link>
       </div>
       <div class="flex flex-col w-full my-8">
-        <.justboxes_list_component justboxes={@justboxes} />
+        <.justboxes_list_component justboxes={@justboxes} user_handle={@user_handle} />
       </div>
       <%= if @pages_count > 1 do %>
-        <.pagination page_number={@page_number} pages_count={@pages_count} />
+        <.pagination page_number={@page_number} pages_count={@pages_count} previous_page?={@previous_page?} next_page?={@next_page?} />
       <% end %>
     </div>
     """
@@ -35,7 +35,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
   end
 
   def handle_params(%{"page" => page}, _uri, socket) do
-    p = %{order_by: ["updated_at"], page: page, page_size: 15}
+    p = %{order_by: ["updated_at"], page: page, page_size: 15, order_directions: [:desc]}
     page = String.to_integer(page)
     {:ok, {justboxes, meta}} =
       Flop.validate_and_run(Justbox, p, repo: Justrunit.Repo)
@@ -49,6 +49,9 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
       |> assign(justboxes: justboxes)
       |> assign(page_number: page)
       |> assign(pages_count: pages_count)
+      |> assign(next_page?: meta.has_next_page?)
+      |> assign(previous_page?: meta.has_previous_page?)
+      |> assign(user_handle: "user")
 
     {:noreply, socket}
   end

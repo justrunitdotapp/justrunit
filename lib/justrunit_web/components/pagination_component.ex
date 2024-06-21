@@ -3,11 +3,13 @@ defmodule JustrunitWeb.PaginationComponent do
 
   attr :page_number, :integer, required: true
   attr :pages_count, :integer, required: true
+  attr :previous_page?, :boolean, required: true
+  attr :next_page?, :boolean, required: true
 
   def pagination(assigns) do
     ~H"""
     <div class="flex items-center space-x-2">
-      <%= if @page_number > 1 do %>
+      <%= if @previous_page? do %>
         <.link
           patch={~p"/justboxes/#{@page_number - 1}"}
           class="bg-blue-500 text-white px-4 py-2 rounded-md font-bold h-10"
@@ -33,7 +35,7 @@ defmodule JustrunitWeb.PaginationComponent do
       <% end %>
 
 
-      <%= if @page_number < @pages_count do %>
+      <%= if @next_page? do %>
         <.link
           patch={~p"/justboxes/#{@page_number + 1}"}
           class="bg-blue-500 text-white px-4 py-2 rounded-md font-bold h-10"

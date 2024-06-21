@@ -51,7 +51,7 @@ defmodule JustrunitWeb.Router do
 
   ## Authentication routes
 
-  scope "/", JustrunitWeb do
+  scope "/", JustrunitWeb.Modules do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     live_session :redirect_if_user_is_authenticated,
