@@ -6,7 +6,7 @@ defmodule JustrunitWeb.Modules.Accounts.SignInLive do
     ~H"""
     <div class="w-96 mx-auto mt-48 rounded-xl">
       <h1 class="text-2xl font-bold text-center">Sign In</h1>
-      <p class="text-center py-2">Click <a href={~p"/sign-up"} class="text-blue-500 hover:underline text-lg">here</a> if you don't have an account</p>
+      <p class="text-center py-2">Click <.link navigate={~p"/sign-up"} class="text-blue-500 hover:underline text-lg">here</.link> if you don't have an account</p>
       <.form for={@form} phx-submit="save" action={~p"/sign_in"} class="space-y-8">
         <.input field={@form[:email]} type="email" label="Email" class="w-full p-2 border-2 border-blue-500 rounded-lg" />
         <.input field={@form[:password]} label="Password" type="password" class="w-full p-2 border-2 border-blue-500 rounded-lg" />

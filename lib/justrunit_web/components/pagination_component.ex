@@ -26,12 +26,21 @@ defmodule JustrunitWeb.PaginationComponent do
       <% end %>
 
        <%= for page <- 1..@pages_count do %>
-        <.link
-          patch={~p"/justboxes/#{page}"}
-          class="border-2 border-blue-500 text-blue-500 px-4 py-2 rounded-md font-bold h-10"
+       <%= if page == @page_number do %>
+        <a
+          href="#"
+          class="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md font-bold h-10"
         >
           <%= page %>
-        </.link>
+        </a>
+      <% else %>
+        <.link
+          patch={~p"/justboxes/#{page}"}
+          class="border-2 border-blue-500 hover:bg-neutral-300 text-blue-500 px-4 py-2 rounded-md font-bold h-10"
+        >
+            <%= page %>
+          </.link>
+        <% end %>
       <% end %>
 
 

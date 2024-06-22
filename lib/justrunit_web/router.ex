@@ -62,7 +62,7 @@ defmodule JustrunitWeb.Router do
       live "/users/reset_password/:token", Accounts.UserResetPasswordLive, :edit
     end
 
-    post "/sign_in", UserSessionController, :create
+    post "/sign_in", Accounts.UserSessionController, :create
   end
 
   scope "/", JustrunitWeb do
@@ -70,7 +70,6 @@ defmodule JustrunitWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{JustrunitWeb.UserAuth, :ensure_authenticated}] do
-      live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end
   end
@@ -78,7 +77,7 @@ defmodule JustrunitWeb.Router do
   scope "/", JustrunitWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserSessionController, :delete
+    delete "/users/log_out", Modules.Accounts.UserSessionController, :delete
 
     live_session :current_user,
       on_mount: [{JustrunitWeb.UserAuth, :mount_current_user}] do

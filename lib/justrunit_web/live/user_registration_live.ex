@@ -1,8 +1,8 @@
 defmodule JustrunitWeb.UserRegistrationLive do
   use JustrunitWeb, :live_view
 
-  alias Justrunit.Modules.Accounts.Accounts
-  alias Justrunit.Modules.Accounts.User
+  alias JustrunitWeb.Modules.Accounts.Accounts
+  alias JustrunitWeb.Modules.Accounts.User
 
   def render(assigns) do
     ~H"""
@@ -22,7 +22,6 @@ defmodule JustrunitWeb.UserRegistrationLive do
         for={@form}
         id="registration_form"
         phx-submit="save"
-        phx-change="validate"
         phx-trigger-action={@trigger_submit}
         action={~p"/users/log_in?_action=registered"}
         method="post"
@@ -68,11 +67,6 @@ defmodule JustrunitWeb.UserRegistrationLive do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, socket |> assign(check_errors: true) |> assign_form(changeset)}
     end
-  end
-
-  def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = Accounts.change_user_registration(%User{}, user_params)
-    {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
