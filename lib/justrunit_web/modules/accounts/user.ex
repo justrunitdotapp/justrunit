@@ -3,18 +3,20 @@ defmodule JustrunitWeb.Modules.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
+    field :name, :string
+    field :handle, :string
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
+    has_many :justboxes, JustrunitWeb.Modules.Justboxes.Justbox
+
     timestamps(type: :utc_datetime)
   end
 
   @doc """
-  A user changeset for registration.
-
   It is important to validate the length of both email and password.
   Otherwise databases may truncate the email without warnings, which
   could lead to unpredictable or insecure behaviour. Long passwords may
@@ -35,11 +37,36 @@ defmodule JustrunitWeb.Modules.Accounts.User do
       submitting the form), this option can be set to `false`.
       Defaults to `true`.
   """
+
+  def settings_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:name, :handle])
+    |> validate_name()
+    |> validate_handle(opts)
+  end
+
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:name, :handle, :email, :password])
+    |> validate_name()
+    |> validate_handle(opts)
     |> validate_email(opts)
     |> validate_password(opts)
+  end
+
+  def validate_name(changeset) do
+    changeset
+    |> validate_required([:name])
+    |> validate_length(:name, max: 32, message: "must be at most 32 characters long")
+    |> validate_length(:name, min: 2, message: "must be at least 2 characters long")
+  end
+
+  def validate_handle(changeset, opts) do
+    changeset
+    |> validate_required([:handle])
+    |> validate_format(:handle, ~r/^[a-zA-Z0-9_]+$/, message: "must contain only alphabets, numbers and underscores")
+    |> validate_length(:handle, max: 32)
+    |> maybe_validate_unique_handle(opts)
   end
 
   defp validate_email(changeset, opts) do
@@ -82,6 +109,16 @@ defmodule JustrunitWeb.Modules.Accounts.User do
       changeset
       |> unsafe_validate_unique(:email, Justrunit.Repo)
       |> unique_constraint(:email)
+    else
+      changeset
+    end
+  end
+
+  defp maybe_validate_unique_handle(changeset, opts) do
+    if Keyword.get(opts, :validate_handle, true) do
+      changeset
+      |> unsafe_validate_unique(:handle, Justrunit.Repo)
+      |> unique_constraint(:handle)
     else
       changeset
     end

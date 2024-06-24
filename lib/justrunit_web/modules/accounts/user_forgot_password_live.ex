@@ -20,8 +20,8 @@ defmodule JustrunitWeb.Modules.Accounts.UserForgotPasswordLive do
         </:actions>
       </.simple_form>
       <p class="text-center text-sm mt-4">
-        <.link href={~p"/users/register"}>Register</.link>
-        | <.link href={~p"/users/log_in"}>Log in</.link>
+        <.link href={~p"/users/register"} class="text-blue-500 hover:underline">Register</.link> |
+        <.link href={~p"/users/log_in"} class="text-blue-500 hover:underline">Log in</.link>
       </p>
     </div>
     """

@@ -1,4 +1,4 @@
-defmodule JustrunitWeb.Modules.Justboxes.JustboxesNewLive do
+defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
   use Phoenix.LiveView
   import JustrunitWeb.CoreComponents, only: [button: 1, input: 1]
   import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
@@ -44,6 +44,8 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesNewLive do
       | "name" => params["name"] |> String.replace(~r/ {2,}/, " ") |> String.trim()
     }
 
+    params = params |> Map.put("user_id", socket.assigns.current_user.id)
+
     params = Map.put(params, "slug", Justrunit.slugify(params["name"]))
     # check if such slug already exists
     if Repo.exists?(from j in Justbox, where: j.slug == ^params["slug"]) do
@@ -55,19 +57,19 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesNewLive do
               Justbox.changeset(%Justbox{}, %{
                 "name" => params["name"],
                 "description" => params["description"],
-                "slug" => params["slug"]
+                "slug" => params["slug"],
+                "user_id" => socket.assigns.current_user.id
               })
             )
         )
         |> assign(already_exists: true)
 
-      IO.inspect("TESTTEST")
-
       {:noreply, socket}
     else
       case Justbox.changeset(%Justbox{}, params) |> Repo.insert() do
         {:ok, _} ->
-          {:noreply, push_navigate(socket, to: "/justboxes/#{params["slug"]}")}
+          user = Repo.get(JustrunitWeb.Modules.Accounts.User, socket.assigns.current_user.id)
+          {:noreply, push_navigate(socket, to: "/#{user.handle}/#{params["slug"]}")}
 
         {:error, changes} ->
           {:noreply, assign(socket, form: to_form(changes))}

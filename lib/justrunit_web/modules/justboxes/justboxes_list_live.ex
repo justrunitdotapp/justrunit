@@ -13,7 +13,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
         <h1 class="text-2xl font-bold">Your JustBoxes</h1>
         <.link
           class="text-white hover:bg-neutral-700 border-2 bg-neutral-900 p-2 rounded-lg font-semibold"
-          patch="/justboxes/new"
+          patch="/new-justbox"
         >
           New JustBox
         </.link>
@@ -38,7 +38,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
     p = %{order_by: ["updated_at"], page: page, page_size: 15, order_directions: [:desc]}
     page = String.to_integer(page)
     {:ok, {justboxes, meta}} =
-      Flop.validate_and_run(Justbox, p, repo: Justrunit.Repo)
+      Flop.validate_and_run(Justbox, Map.put(p, :filters, [%{field: :user_id, op: :==, value: socket.assigns.current_user.id}]), repo: Justrunit.Repo)
 
     d = div(meta.total_count, p.page_size)
     q = rem(meta.total_count, p.page_size)
@@ -51,8 +51,12 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
       |> assign(pages_count: pages_count)
       |> assign(next_page?: meta.has_next_page?)
       |> assign(previous_page?: meta.has_previous_page?)
-      |> assign(user_handle: "user")
+      |> assign(user_handle: socket.assigns.current_user.handle)
 
     {:noreply, socket}
+  end
+
+  def handle_params(_params, _uri, socket) do
+    handle_params(%{"page" => "1"}, _uri, socket)
   end
 end

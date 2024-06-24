@@ -12,12 +12,15 @@ defmodule JustrunitWeb.Modules.Justboxes.Justbox do
     field :name, :string
     field :slug, :string
     field :description, :string
+    field :s3_url, :string
+    belongs_to :user, JustrunitWeb.Modules.Accounts.User
+
     timestamps()
   end
 
   def changeset(struct \\ %__MODULE__{}, params) do
     struct
-    |> cast(params, [:name, :slug, :description])
-    |> validate_required([:name, :slug, :description])
+    |> cast(params, [:name, :slug, :description, :user_id, :s3_url])
+    |> validate_required([:name, :slug, :description, :user_id, :s3_url])
   end
 end

@@ -11,6 +11,24 @@ config :justrunit,
   ecto_repos: [Justrunit.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :ex_aws,
+  access_key_id: [{:system, "ezGgiL68XbUDPeTjyc3P"}, :instance_role],
+  secret_access_key: [{:system, "aqf5dcKVIzubGzE986dYenHl9ibSsKt7LZNMmgoD"}, :instance_role]
+
+config :ex_aws, :retries, max_attempts: 10, base_backoff_in_ms: 10, max_backoff_in_ms: 10_000
+
+config :ex_aws, :s3, access_key_id: [{:system, "ezGgiL68XbUDPeTjyc3P"}, :instance_role],
+  secret_access_key: [{:system, "aqf5dcKVIzubGzE986dYenHl9ibSsKt7LZNMmgoD"}, :instance_role],
+  scheme: "https://",
+  host: "localhost",
+  port: 9000,
+  region: "local",
+  bucket: "justrunit-dev"
+
+config :ex_aws, :hackney_opts,
+  follow_redirect: true,
+  recv_timeout: 30_000
+
 # Configures the endpoint
 config :justrunit, JustrunitWeb.Endpoint,
   url: [host: "localhost"],

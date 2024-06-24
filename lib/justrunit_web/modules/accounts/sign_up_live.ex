@@ -7,7 +7,8 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
     <div class="w-96 mx-auto mt-48 rounded-xl">
       <h1 class="text-2xl font-bold text-center">New Account</h1>
       <p class="text-center py-2">
-        Click <.link navigate={~p"/sign-in"} class="text-blue-500 hover:underline text-lg">here</.link>
+        Click
+        <.link navigate={~p"/sign-in"} class="text-blue-500 hover:underline text-lg">here</.link>
         to sign in
       </p>
       <%= if @check_errors do %>
@@ -15,7 +16,15 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
           <%= @form.errors %>
         </div>
       <% end %>
-      <.form for={@form} phx-submit="save" phx-change="validate" class="space-y-10">
+      <.form
+        for={@form}
+        phx-change="validate"
+        phx-submit="save"
+        action={~p"/sign-in?_action=registered"}
+        phx-trigger-action={@trigger_submit}
+        method="post"
+        class="space-y-10"
+      >
         <.input
           field={@form[:email]}
           type="email"
@@ -41,6 +50,8 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
 
   alias JustrunitWeb.Modules.Accounts.User
   alias JustrunitWeb.Modules.Accounts
+  alias Justrunit.Repo
+  import Ecto.Query
 
   def mount(_params, _session, socket) do
     changeset = Accounts.change_user_registration(%User{})
@@ -50,7 +61,7 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
       |> assign(trigger_submit: false, check_errors: false)
       |> assign_form(changeset)
 
-    {:ok, socket, layout: false}
+    {:ok, socket, layout: false, temporary_assigns: [form: nil]}
   end
 
   def handle_event("validate", %{"user" => user_params}, socket) do
@@ -59,7 +70,15 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do
-    case Accounts.register_user(user_params) do
+    users_count = Repo.aggregate(User, :count, :id)
+
+    user_params =
+      user_params
+      |> Map.put("name", "User" <> "#{users_count + 1}")
+      |> Map.put("handle", "user" <> "#{users_count + 1}")
+
+    result = User.registration_changeset(%User{}, user_params) |> Repo.insert()
+    case result do
       {:ok, user} ->
         {:ok, _} =
           Accounts.deliver_user_confirmation_instructions(

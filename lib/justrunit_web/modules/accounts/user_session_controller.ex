@@ -1,7 +1,7 @@
 defmodule JustrunitWeb.Modules.Accounts.UserSessionController do
   use JustrunitWeb, :controller
 
-  alias Justrunit.Accounts
+  alias JustrunitWeb.Modules.Accounts
   alias JustrunitWeb.UserAuth
 
   def create(conn, %{"_action" => "registered"} = params) do
@@ -10,7 +10,7 @@ defmodule JustrunitWeb.Modules.Accounts.UserSessionController do
 
   def create(conn, %{"_action" => "password_updated"} = params) do
     conn
-    |> put_session(:user_return_to, ~p"/users/settings")
+    |> put_session(:user_return_to, ~p"/justboxes/1")
     |> create(params, "Password updated successfully!")
   end
 
@@ -30,7 +30,7 @@ defmodule JustrunitWeb.Modules.Accounts.UserSessionController do
       conn
       |> put_flash(:error, "Invalid email or password")
       |> put_flash(:email, String.slice(email, 0, 160))
-      |> redirect(to: ~p"/users/log_in")
+      |> redirect(to: ~p"/sign-in")
     end
   end
 

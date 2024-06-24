@@ -17,7 +17,7 @@ defmodule JustrunitWeb.Modules.Accounts.UserToken do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
-    belongs_to :user, Justrunit.Modules.Accounts.User
+    belongs_to :user, JustrunitWeb.Modules.Accounts.User
 
     timestamps(type: :utc_datetime, updated_at: false)
   end

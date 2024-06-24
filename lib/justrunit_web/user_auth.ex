@@ -4,7 +4,7 @@ defmodule JustrunitWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
 
-  alias Justrunit.Accounts
+  alias JustrunitWeb.Modules.Accounts
 
   # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
@@ -158,7 +158,7 @@ defmodule JustrunitWeb.UserAuth do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"/users/log_in")
+        |> Phoenix.LiveView.redirect(to: ~p"/sign-in")
 
       {:halt, socket}
     end
@@ -208,7 +208,7 @@ defmodule JustrunitWeb.UserAuth do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: ~p"/users/log_in")
+      |> redirect(to: ~p"/sign-in")
       |> halt()
     end
   end
@@ -225,5 +225,5 @@ defmodule JustrunitWeb.UserAuth do
 
   defp maybe_store_return_to(conn), do: conn
 
-  defp signed_in_path(_conn), do: ~p"/"
+  defp signed_in_path(_conn), do: ~p"/justboxes"
 end

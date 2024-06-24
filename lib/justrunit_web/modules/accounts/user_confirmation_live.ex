@@ -1,7 +1,7 @@
 defmodule JustrunitWeb.UserConfirmationLive do
   use JustrunitWeb, :live_view
 
-  alias Justrunit.Accounts
+  alias JustrunitWeb.Modules.Accounts
 
   def render(%{live_action: :edit} = assigns) do
     ~H"""
@@ -36,7 +36,7 @@ defmodule JustrunitWeb.UserConfirmationLive do
         {:noreply,
          socket
          |> put_flash(:info, "User confirmed successfully.")
-         |> redirect(to: ~p"/")}
+         |> redirect(to: ~p"/justboxes/1")}
 
       :error ->
         # If there is a current user and the account was already confirmed,
