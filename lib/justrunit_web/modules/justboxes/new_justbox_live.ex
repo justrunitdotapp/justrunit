@@ -20,6 +20,9 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
           </div>
         <% end %>
         <.input field={@form[:description]} label="Description" type="textarea" class="w-full" />
+        <div class="container" phx-drop-target={@uploads.project.ref}>
+          <.live_file_input upload={@uploads.project} />
+        </div>
         <.button type="submit" class="mt-4">Create</.button>
       </.form>
     </div>
@@ -30,7 +33,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
 
   def mount(_params, _session, socket) do
     form = to_form(Justbox.changeset(%Justbox{}, %{}))
-    socket = socket |> assign(already_exists: false)
+    socket = socket |> assign(already_exists: false) |> assign(uploaded: []) |> allow_upload(:project, accept: :any)
     {:ok, assign(socket, form: form), layout: {JustrunitWeb.Layouts, :app}}
   end
 
@@ -38,42 +41,45 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
   import Ecto.Query
 
   def handle_event("new", %{"justbox" => params}, socket) do
-    # remove double spaces and trim
-    params = %{
-      params
-      | "name" => params["name"] |> String.replace(~r/ {2,}/, " ") |> String.trim()
-    }
+    params = params
+    |> Map.update!("name", &String.replace(&1, ~r/ {2,}/, " ") |> String.trim())
+    |> Map.put("s3_key", "#{socket.assigns.current_user.id}/#{params["slug"]}")
+    |> Map.put("user_id", socket.assigns.current_user.id)
+    |> Map.put("slug", Justrunit.slugify(params["name"]))
 
-    params = params |> Map.put("user_id", socket.assigns.current_user.id)
-
-    params = Map.put(params, "slug", Justrunit.slugify(params["name"]))
-    # check if such slug already exists
     if Repo.exists?(from j in Justbox, where: j.slug == ^params["slug"]) do
-      socket =
-        socket
-        |> assign(
-          form:
-            to_form(
-              Justbox.changeset(%Justbox{}, %{
-                "name" => params["name"],
-                "description" => params["description"],
-                "slug" => params["slug"],
-                "user_id" => socket.assigns.current_user.id
-              })
-            )
-        )
-        |> assign(already_exists: true)
+      changeset = Justbox.changeset(%Justbox{}, %{
+        "name" => params["name"],
+        "description" => params["description"],
+        "slug" => params["slug"],
+        "s3_key" => params["s3_key"],
+        "user_id" => socket.assigns.current_user.id
+      })
+
+      socket = socket
+      |> assign(form: to_form(changeset))
+      |> assign(already_exists: true)
 
       {:noreply, socket}
     else
       case Justbox.changeset(%Justbox{}, params) |> Repo.insert() do
         {:ok, _} ->
-          user = Repo.get(JustrunitWeb.Modules.Accounts.User, socket.assigns.current_user.id)
-          {:noreply, push_navigate(socket, to: "/#{user.handle}/#{params["slug"]}")}
+          result = ExAws.S3.put_object(bucket: "justrunit", key: params["s3_key"], body: "test") |> ExAws.request()
+          handle_s3_result(result, socket, params)
 
         {:error, changes} ->
           {:noreply, assign(socket, form: to_form(changes))}
       end
     end
+  end
+
+  defp handle_s3_result({:ok, _}, socket, params) do
+    user = Repo.get(JustrunitWeb.Modules.Accounts.User, socket.assigns.current_user.id)
+    {:noreply, push_navigate(socket, to: "/#{user.handle}/#{params["slug"]}")}
+  end
+
+  defp handle_s3_result({:error, _}, socket, params) do
+    socket = socket |> put_flash(:error, "Error occurred while uploading")
+    {:noreply, assign(socket, form: to_form(Justbox.changeset(%Justbox{}, params)))}
   end
 end

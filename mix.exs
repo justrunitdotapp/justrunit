@@ -63,7 +63,9 @@ defmodule Justrunit.MixProject do
       {:flop, "~> 0.25"},
       {:ex_aws, "~> 2.0"},
       {:ex_aws_s3, "~> 2.0"},
-      {:hackney, "~> 1.20"}
+      {:hackney, "~> 1.20"},
+      {:waffle, "~> 1.0"},
+      {:sweet_xml, "~> 0.7"}
     ]
   end
 
