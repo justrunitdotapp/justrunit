@@ -1,6 +1,28 @@
-<nav class="flex justify-end m-2 gap-4">
- <.link patch="/sign-in" class="border-2 border-blue-500 hover:border-blue-600 text-blue-500 px-4 py-2 rounded-lg font-medium hover:bg-blue-600  hover:text-white transition">Sign in</.link>
- <.link patch="/sign-up" class="border-2 border-blue-500 hover:border-blue-600 bg-blue-500 px-4 text-white py-2 rounded-lg font-medium hover:bg-blue-600 transition">Register</.link>
+<nav class="flex justify-end m-2 space-x-6 items-center select-none">
+  <.link
+    navigate="/"
+    class="text-white font-extrabold bg-gradient-to-r from-blue-500 to-blue-600 text-2xl px-4 py-2 rounded-lg italic tracking-wider skew-x-12 hover:scale-105 transition-all duration-200 mr-auto"
+  >
+    Just Run It
+  </.link>
+  <.link
+    navigate={~p"/pricing"}
+    class="text-blue-500 hover:text-blue-600 hover:underline text-sm font-medium"
+  >
+    Pricing Plans
+  </.link>
+  <.link
+    navigate={~p"/sign-in"}
+    class="border border-blue-500 hover:border-blue-500 text-blue-500 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-500 hover:text-white transition-all duration-300"
+  >
+    Sign In
+  </.link>
+  <.link
+    navigate={~p"/sign-up"}
+    class="border border-blue-500 hover:border-blue-600 bg-blue-500 px-4 text-white py-2 text-sm rounded-lg font-medium hover:bg-blue-600 transition-all duration-300"
+  >
+    Sign Up
+  </.link>
 </nav>
 <.flash_group flash={@flash} />
 <%= @inner_content %>

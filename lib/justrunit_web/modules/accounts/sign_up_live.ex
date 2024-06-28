@@ -78,6 +78,7 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
       |> Map.put("handle", "user" <> "#{users_count + 1}")
 
     result = User.registration_changeset(%User{}, user_params) |> Repo.insert()
+
     case result do
       {:ok, user} ->
         {:ok, _} =

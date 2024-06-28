@@ -21,6 +21,7 @@ defmodule JustrunitWeb.Router do
     pipe_through :browser
 
     live "/", Welcome.WelcomeLive, :welcome
+    live "pricing", Pricing.PricingLive, :pricing
   end
 
   scope "/", JustrunitWeb.Modules do

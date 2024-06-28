@@ -25,25 +25,28 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
     cond do
       diff < 60 ->
         "#{diff} second(s) ago"
+
       diff < 3600 ->
         minutes = div(diff, 60)
         "#{minutes} minute(s) ago"
+
       diff < 86400 ->
         hours = div(diff, 3600)
         "#{hours} hour(s) ago"
-      diff < 2592000 ->
+
+      diff < 2_592_000 ->
         days = div(diff, 86400)
         "#{days} day(s) ago"
-      diff < 31536000 ->
-        months = div(diff, 2592000)
+
+      diff < 31_536_000 ->
+        months = div(diff, 2_592_000)
         "#{months} month(s) ago"
+
       true ->
-        years = div(diff, 31536000)
+        years = div(diff, 31_536_000)
         "#{years} year(s) ago"
     end
   end
-
-
 
   defp is_last?(index, size) when size == index + 1, do: true
   defp is_last?(_, _), do: false
@@ -53,7 +56,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
   attr :last_changed, :string, required: true
 
   def justbox(assigns) when assigns.is_last == false do
-    assigns = assign(assigns, name_slug: Justrunit.slugify(assigns.name))
+    assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
     ~H"""
     <div class="p-2 hover:bg-neutral-300 border-b border-gray-800 flex flex-row justify-between space-x-4">
@@ -64,7 +67,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
   end
 
   def justbox(assigns) do
-    assigns = assign(assigns, name_slug: Justrunit.slugify(assigns.name))
+    assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
     ~H"""
     <div class="p-2 hover:bg-neutral-300 flex flex-row justify-between space-x-4">

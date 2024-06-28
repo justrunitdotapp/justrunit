@@ -11,10 +11,9 @@ config :justrunit,
   ecto_repos: [Justrunit.Repo],
   generators: [timestamp_type: :utc_datetime]
 
-
 config :ex_aws,
-  access_key_id: "TASyLjKzjUsov62fYPvP",
-  secret_access_key: "NlC70PtGI7yC1c8tO5NEd8smF0j53OlNur5nsiv3"
+  access_key_id: "xQ5h5M6bWZXwsi4Qepv0",
+  secret_access_key: "WEBCuNwJwvZdHvCmcBFMY5bIPBXnE7oznY915j9B"
 
 config :ex_aws, :s3,
   scheme: "http://",

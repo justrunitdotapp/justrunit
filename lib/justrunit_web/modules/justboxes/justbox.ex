@@ -4,8 +4,7 @@ defmodule JustrunitWeb.Modules.Justboxes.Justbox do
 
   @derive {
     Flop.Schema,
-    sortable: [:updated_at],
-    filterable: []
+    sortable: [:updated_at], filterable: []
   }
 
   schema "justboxes" do

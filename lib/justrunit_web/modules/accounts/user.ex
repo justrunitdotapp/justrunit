@@ -64,7 +64,9 @@ defmodule JustrunitWeb.Modules.Accounts.User do
   def validate_handle(changeset, opts) do
     changeset
     |> validate_required([:handle])
-    |> validate_format(:handle, ~r/^[a-zA-Z0-9_]+$/, message: "must contain only alphabets, numbers and underscores")
+    |> validate_format(:handle, ~r/^[a-zA-Z0-9_]+$/,
+      message: "must contain only alphabets, numbers and underscores"
+    )
     |> validate_length(:handle, max: 32)
     |> maybe_validate_unique_handle(opts)
   end
@@ -83,7 +85,9 @@ defmodule JustrunitWeb.Modules.Accounts.User do
     |> validate_length(:password, min: 12, max: 72)
     |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
     |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
-    |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
+    |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/,
+      message: "at least one digit or punctuation character"
+    )
     |> maybe_hash_password(opts)
   end
 
@@ -172,7 +176,10 @@ defmodule JustrunitWeb.Modules.Accounts.User do
   If there is no user or the user doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%JustrunitWeb.Modules.Accounts.User{hashed_password: hashed_password}, password)
+  def valid_password?(
+        %JustrunitWeb.Modules.Accounts.User{hashed_password: hashed_password},
+        password
+      )
       when is_binary(hashed_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, hashed_password)
   end

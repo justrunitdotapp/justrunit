@@ -65,7 +65,8 @@ defmodule Justrunit.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.20"},
       {:waffle, "~> 1.0"},
-      {:sweet_xml, "~> 0.7"}
+      {:sweet_xml, "~> 0.7"},
+      {:slugify, "~> 1.0"}
     ]
   end
 

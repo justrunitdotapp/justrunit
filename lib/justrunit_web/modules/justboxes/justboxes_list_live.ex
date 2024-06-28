@@ -22,7 +22,12 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
         <.justboxes_list_component justboxes={@justboxes} user_handle={@user_handle} />
       </div>
       <%= if @pages_count > 1 do %>
-        <.pagination page_number={@page_number} pages_count={@pages_count} previous_page?={@previous_page?} next_page?={@next_page?} />
+        <.pagination
+          page_number={@page_number}
+          pages_count={@pages_count}
+          previous_page?={@previous_page?}
+          next_page?={@next_page?}
+        />
       <% end %>
     </div>
     """
@@ -37,8 +42,13 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
   def handle_params(%{"page" => page}, _uri, socket) do
     p = %{order_by: ["updated_at"], page: page, page_size: 15, order_directions: [:desc]}
     page = String.to_integer(page)
+
     {:ok, {justboxes, meta}} =
-      Flop.validate_and_run(Justbox, Map.put(p, :filters, [%{field: :user_id, op: :==, value: socket.assigns.current_user.id}]), repo: Justrunit.Repo)
+      Flop.validate_and_run(
+        Justbox,
+        Map.put(p, :filters, [%{field: :user_id, op: :==, value: socket.assigns.current_user.id}]),
+        repo: Justrunit.Repo
+      )
 
     d = div(meta.total_count, p.page_size)
     q = rem(meta.total_count, p.page_size)

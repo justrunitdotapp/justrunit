@@ -1,6 +1,17 @@
-<nav class="flex justify-end space-x-4 mx-4 mt-2">
- <.link patch="/settings" class=" bg-blue-500 text-white p-2 rounded-lg font-medium hover:bg-blue-600 transition p-2 border-2 border-blue-500 hover:border-blue-600 rounded-lg">Settings</.link>
- <.link href={~p"/users/log_out"} method="delete" class="border-2 border-blue-500 text-blue-500 p-2 rounded-lg font-medium hover:bg-blue-600 hover:border-blue-600 hover:text-white transition">Log out</.link>
+<nav class="flex justify-end m-2 space-x-6 items-center select-none">
+  <.link
+    patch="/settings"
+    class="border border-blue-500 hover:border-blue-600 bg-blue-500 px-4 text-white py-2 text-sm rounded-lg font-medium hover:bg-blue-600 transition-all duration-300"
+  >
+    Settings
+  </.link>
+  <.link
+    href={~p"/users/log_out"}
+    method="delete"
+    class="border border-blue-500 hover:border-blue-500 text-blue-500 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-500 hover:text-white transition-all duration-300"
+  >
+    Log out
+  </.link>
 </nav>
 <.flash_group flash={@flash} />
 <%= @inner_content %>
