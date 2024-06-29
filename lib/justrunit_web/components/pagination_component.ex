@@ -71,4 +71,6 @@ defmodule JustrunitWeb.PaginationComponent do
     socket = socket |> assign(page_number: socket.assigns.page_number - 1)
     {:noreply, socket}
   end
+
+
 end

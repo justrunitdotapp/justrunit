@@ -39,6 +39,20 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
   end
 
+  def handle_event("delete_justbox", %{"name" => name}, socket) do
+    justbox = Justrunit.Repo.get_by(Justbox, name: name)
+    case justbox do
+      nil ->
+        socket = socket |> put_flash(:error, "Failed to delete justbox, it might have been already removed.")
+        {:noreply, socket}
+
+      justbox ->
+        {:ok, _} = Justrunit.Repo.delete(justbox)
+        socket = socket |> put_flash(:info, "Justbox removed successfully.")
+        {:noreply, socket}
+    end
+  end
+
   def handle_params(%{"page" => page}, _uri, socket) do
     p = %{order_by: ["updated_at"], page: page, page_size: 15, order_directions: [:desc]}
     page = String.to_integer(page)

@@ -59,9 +59,16 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
     assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
     ~H"""
-    <div class="p-2 hover:bg-neutral-300 border-b border-gray-800 flex flex-row justify-between space-x-4">
+    <div class="p-2 hover:bg-neutral-300 border-b border-gray-800 flex flex-row justify-between space-x-4 group">
       <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
-      <p class="text-gray-600">Last updated <%= @last_changed %></p>
+      <p class="text-gray-600 group-hover:hidden">Last updated <%= @last_changed %></p>
+      <.link
+        phx-click="delete_justbox"
+        phx-value-name={@name_slug}
+        class="hidden group-hover:block hover:underline font-medium text-red-500"
+      >
+        Remove
+      </.link>
     </div>
     """
   end
@@ -70,9 +77,16 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
     assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
     ~H"""
-    <div class="p-2 hover:bg-neutral-300 flex flex-row justify-between space-x-4">
+    <div class="p-2 hover:bg-neutral-300 flex flex-row justify-between space-x-4 group">
       <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
-      <p class="text-gray-600">Last updated <%= @last_changed %></p>
+      <p class="text-gray-600 group-hover:hidden">Last updated <%= @last_changed %></p>
+      <.link
+        phx-click="delete_justbox"
+        phx-value-name={@name_slug}
+        class="hidden group-hover:block hover:underline text-red-500 font-medium"
+      >
+        Remove
+      </.link>
     </div>
     """
   end

@@ -22,13 +22,18 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+
+
 let Hooks = {}
-Hooks.ZipUpload = {
+Hooks.Upload = {
   mounted(){
     this.el.addEventListener("input", e => {
       e.preventDefault()
       Array.from(e.target.files).forEach(file => {
-        console.log("NIGGER")
+        let relativePath = file.webkitRelativePath.split('/').slice(1).join('/')
+        console.log(relativePath)
+        let newFile = new File([file], relativePath, { type: file.type })
+        this.upload("project", [newFile])
       })
     })
   }

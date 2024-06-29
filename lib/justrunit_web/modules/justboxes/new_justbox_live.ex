@@ -5,7 +5,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col max-w-4xl mx-auto mt-12 space-y-8">
+    <div class="flex flex-col max-w-4xl mx-auto mt-12">
       <.breadcrumb items={[%{label: "JustBoxes", navigate: "/justboxes"}, %{text: "New JustBox"}]} />
       <.form for={@form} phx-submit="new" phx-change="validate" class="w-full space-y-4">
         <h1 class="text-2xl font-bold">New JustBox</h1>
@@ -29,25 +29,14 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
           </div>
         <% end %>
 
-        <%= if @uploads.project.entries == [] do %>
-          <div
-            class="w-full container flex flex-col items-center justify-center size-96 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg p-6 shadow-lg space-y-6"
-            phx-drop-target={@uploads.project.ref}
-          >
-            <h1 class="text-center text-3xl text-white font-bold">Upload files here</h1>
-            <.icon name="hero-arrow-down-tray" class="size-36 text-white" />
-
-            <.live_file_input
-              class="mt-4 p-4 text-white rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 transparent"
-              upload={@uploads.project}
-            />
-          </div>
-        <% else %>
-          <div
-            class="w-full container flex flex-col size-96 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg p-6 shadow-lg space-y-6"
-            phx-drop-target={@uploads.project.ref}
-          >
-            <ul class="overflow-y-auto space-y-2">
+        <div class="w-full container flex flex-col items-center justify-center size-96 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg p-6 shadow-lg">
+          <%= if @uploads.project.entries == [] do %>
+            <div class="flex flex-col text-white items-center justify-center space-y-2 my-auto">
+              <h1 class="text-3xl font-bold">Upload files here</h1>
+              <.icon name="hero-arrow-down-tray" class="size-36" />
+            </div>
+          <% else %>
+            <ul class="overflow-y-auto space-y-2 w-full rounded-lg">
               <%= for entry <- @uploads.project.entries do %>
                 <li class="flex text-white border border-white rounded-xl justify-between items-center">
                   <p class="pl-2 font-medium"><%= entry.client_name %></p>
@@ -62,9 +51,12 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
                 </li>
               <% end %>
             </ul>
-            <.live_file_input upload={@uploads.project} />
+          <% end %>
+          <div class="w-full mt-auto pt-4">
+            <.live_file_input class="hidden" upload={@uploads.project} />
+            <input id="project" type="file" webkitdirectory={true} phx-hook="Upload" class="w-full p-4 text-white rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 transparent" />
           </div>
-        <% end %>
+        </div>
 
         <.button type="submit" phx-disable-with="Setting up your Justbox..." class="mt-4">
           Create
