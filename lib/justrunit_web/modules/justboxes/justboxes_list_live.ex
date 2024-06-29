@@ -1,5 +1,5 @@
 defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
-  use Phoenix.LiveView
+  use JustrunitWeb, :live_view
 
   import JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive,
     only: [justboxes_list_component: 1]
@@ -41,15 +41,53 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
 
   def handle_event("delete_justbox", %{"name" => name}, socket) do
     justbox = Justrunit.Repo.get_by(Justbox, name: name)
-    case justbox do
-      nil ->
-        socket = socket |> put_flash(:error, "Failed to delete justbox, it might have been already removed.")
-        {:noreply, socket}
 
-      justbox ->
-        {:ok, _} = Justrunit.Repo.delete(justbox)
-        socket = socket |> put_flash(:info, "Justbox removed successfully.")
-        {:noreply, socket}
+    if justbox do
+      case Justrunit.Repo.delete(justbox) do
+        {:ok, _} ->
+          res =
+            ExAws.S3.list_objects("justrunit-dev", prefix: justbox.s3_key)
+            |> ExAws.request()
+
+          case res do
+            {:ok, %{body: %{"Contents" => []}}} ->
+              socket = put_flash(socket, :info, "Justbox removed successfully.")
+              {:noreply, push_patch(socket, to: ~p"/justboxes")}
+
+            {:ok, _} ->
+              keys = Enum.map(contents, fn %{"Key" => key} -> key end)
+
+              ExAws.S3.delete_objects("justrunit-dev", keys)
+              |> ExAws.request()
+
+              {:noreply, push_patch(socket, to: ~p"/justboxes")}
+
+            _ ->
+              socket =
+                put_flash(
+                  socket,
+                  :error,
+                  "Failed to delete justbox, it might have been already removed."
+                )
+
+              {:noreply, socket}
+          end
+
+        _ ->
+          socket =
+            put_flash(
+              socket,
+              :error,
+              "Failed to delete justbox, it might have been already removed."
+            )
+
+          {:noreply, socket}
+      end
+    else
+      socket =
+        put_flash(socket, :error, "Failed to delete justbox, it might have been already removed.")
+
+      {:noreply, socket}
     end
   end
 

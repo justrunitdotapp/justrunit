@@ -54,7 +54,13 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
           <% end %>
           <div class="w-full mt-auto pt-4">
             <.live_file_input class="hidden" upload={@uploads.project} />
-            <input id="project" type="file" webkitdirectory={true} phx-hook="Upload" class="w-full p-4 text-white rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 transparent" />
+            <input
+              id="project"
+              type="file"
+              webkitdirectory={true}
+              phx-hook="Upload"
+              class="w-full p-4 text-white rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 transparent"
+            />
           </div>
         </div>
 
