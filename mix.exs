@@ -43,7 +43,6 @@ defmodule Justrunit.MixProject do
       {:phoenix_live_view, "~> 1.0.0-rc.5", override: true},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
@@ -66,7 +65,8 @@ defmodule Justrunit.MixProject do
       {:hackney, "~> 1.20"},
       {:waffle, "~> 1.0"},
       {:sweet_xml, "~> 0.7"},
-      {:slugify, "~> 1.0"}
+      {:slugify, "~> 1.0"},
+      {:live_svelte, "~> 0.13.2"}
     ]
   end
 
@@ -78,17 +78,18 @@ defmodule Justrunit.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: ["deps.get", "ecto.setup", "npm install --prefix assets"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind justrunit", "esbuild justrunit"],
       "assets.deploy": [
-        "tailwind justrunit --minify",
-        "esbuild justrunit --minify",
+        "tailwind default --minify",
+        "node build.js --deploy --prefix assets",
         "phx.digest"
-      ]
+      ],
+      "assets.deploy": ["tailwind default --minify", "node build.js --deploy --prefix assets", "phx.digest"]
     ]
   end
 end

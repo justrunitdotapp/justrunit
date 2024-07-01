@@ -1,8 +1,9 @@
 defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
-  use Phoenix.LiveView
+  use JustrunitWeb, :live_view
 
   def render(assigns) do
     ~H"""
+      <.svelte name="Jeditor" socket={@socket} />
     <%= if @error != false do %>
       <div class="flex flex-col items-center max-w-4xl mx-auto mt-12">
         <h1 class="text-2xl font-bold"><%= @error %></h1>

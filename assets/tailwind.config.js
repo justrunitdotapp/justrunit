@@ -9,7 +9,8 @@ module.exports = {
   content: [
     "./js/**/*.js",
     "../lib/justrunit_web.ex",
-    "../lib/justrunit_web/**/*.*ex"
+    "../lib/justrunit_web/**/*.*ex",
+    "./svelte/**/*.svelte"
   ],
   theme: {
     extend: {

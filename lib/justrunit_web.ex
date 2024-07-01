@@ -86,6 +86,7 @@ defmodule JustrunitWeb do
       # Core UI components and translation
       import JustrunitWeb.CoreComponents
       import JustrunitWeb.Gettext
+      import LiveSvelte
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
