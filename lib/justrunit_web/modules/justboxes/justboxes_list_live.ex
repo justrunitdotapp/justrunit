@@ -36,6 +36,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
   alias JustrunitWeb.Modules.Justboxes.Justbox
 
   def mount(_params, _session, socket) do
+    socket = socket |> assign(show_modal: false)
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
   end
 
@@ -54,11 +55,14 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
               socket = put_flash(socket, :info, "Justbox removed successfully.")
               {:noreply, push_patch(socket, to: ~p"/justboxes")}
 
-            {:ok, _} ->
-              keys = Enum.map(contents, fn %{"Key" => key} -> key end)
-
-              ExAws.S3.delete_objects("justrunit-dev", keys)
-              |> ExAws.request()
+            {:ok, contents} ->
+              contents
+              |> Map.get(:body)
+              |> Map.get(:contents)
+              |> Enum.each(fn element ->
+                ExAws.S3.delete_object("justrunit-dev", Map.get(element, :key))
+                |> ExAws.request()
+              end)
 
               {:noreply, push_patch(socket, to: ~p"/justboxes")}
 

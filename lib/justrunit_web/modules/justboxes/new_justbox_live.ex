@@ -147,7 +147,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
         {:noreply, socket}
 
       {:error, reason} ->
-        socket = socket |> put_flash(:error, "Error occurred while uploading")
+        socket = socket |> put_flash(:error, "Error occurred while uploading files")
         {:noreply, assign(socket, form: to_form(Justbox.changeset(%Justbox{}, params)))}
 
       {:error, changes} ->

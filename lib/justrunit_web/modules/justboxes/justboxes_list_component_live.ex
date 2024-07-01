@@ -1,5 +1,6 @@
 defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
   use Phoenix.Component
+  alias Phoenix.LiveView.JS
 
   attr :justboxes, :list, required: true
   attr :user_handle, :string, required: true
@@ -59,16 +60,41 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
     assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
     ~H"""
-    <div class="p-2 hover:bg-neutral-300 border-b border-gray-800 flex flex-row justify-between space-x-4 group">
+    <div class="p-2 border-b hover:bg-neutral-300 border-gray-800 flex flex-row justify-between space-x-4 group relative">
       <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
       <p class="text-gray-600 group-hover:hidden">Last updated <%= @last_changed %></p>
-      <.link
-        phx-click="delete_justbox"
+      <button
+        phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
         phx-value-name={@name_slug}
-        class="hidden group-hover:block hover:underline font-medium text-red-500"
+        class="hidden group-hover:block hover:underline text-red-500 font-medium"
       >
         Remove
-      </.link>
+      </button>
+
+      <div
+        id={"popover-content-#{@name_slug}"}
+        phx-click-away={JS.hide(to: "#popover-content-#{@name_slug}")}
+        class="border border-zinc-300 p-4 rounded-md shadow-md bg-white absolute top-0 right-[-8px] transform translate-x-full z-1000 hidden"
+      >
+        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-zinc-300">
+        </div>
+        <p class="font-medium text-center mb-2 text-gray-800">Are you sure?</p>
+        <div class="flex justify-center space-x-2">
+          <button
+            phx-click="delete_justbox"
+            phx-value-name={@name_slug}
+            class="bg-red-500 text-white hover:bg-red-600 px-3 py-1 rounded-md"
+          >
+            Yes
+          </button>
+          <button
+            phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
+            class="border border-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-zinc-200"
+          >
+            No
+          </button>
+        </div>
+      </div>
     </div>
     """
   end
@@ -77,16 +103,46 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
     assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
     ~H"""
-    <div class="p-2 hover:bg-neutral-300 flex flex-row justify-between space-x-4 group">
-      <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
+    <div
+      id={"popover-#{@name_slug}"}
+      class="p-2 hover:bg-neutral-300 flex flex-row justify-between space-x-4 group relative"
+    >
+      <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline">
+        <%= @name %>
+      </a>
       <p class="text-gray-600 group-hover:hidden">Last updated <%= @last_changed %></p>
-      <.link
-        phx-click="delete_justbox"
+      <button
+        phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
         phx-value-name={@name_slug}
         class="hidden group-hover:block hover:underline text-red-500 font-medium"
       >
         Remove
-      </.link>
+      </button>
+
+      <div
+        id={"popover-content-#{@name_slug}"}
+        phx-click-away={JS.hide(to: "#popover-content-#{@name_slug}")}
+        class="border border-zinc-300 p-4 rounded-md shadow-md bg-white absolute top-0 right-[-8px] transform translate-x-full z-1000 hidden"
+      >
+        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-zinc-300">
+        </div>
+        <p class="font-medium text-center mb-2 text-gray-800">Are you sure?</p>
+        <div class="flex justify-center space-x-2">
+          <button
+            phx-click="delete_justbox"
+            phx-value-name={@name_slug}
+            class="bg-red-500 text-white hover:bg-red-600 px-3 py-1 rounded-md"
+          >
+            Yes
+          </button>
+          <button
+            phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
+            class="border border-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-zinc-200"
+          >
+            No
+          </button>
+        </div>
+      </div>
     </div>
     """
   end
