@@ -66,7 +66,8 @@ defmodule Justrunit.MixProject do
       {:waffle, "~> 1.0"},
       {:sweet_xml, "~> 0.7"},
       {:slugify, "~> 1.0"},
-      {:live_svelte, "~> 0.13.2"}
+      {:live_svelte, "~> 0.13.2"},
+      {:stripity_stripe, "~> 3.0"}
     ]
   end
 

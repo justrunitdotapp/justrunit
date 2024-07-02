@@ -1,13 +1,13 @@
 defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
-  use Phoenix.LiveView
+  use JustrunitWeb, :live_view
   import JustrunitWeb.CoreComponents, only: [button: 1, input: 1, icon: 1]
   import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
 
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col max-w-4xl mx-auto mt-12">
+    <div class="flex flex-col mx-auto mt-12 max-w-4xl">
       <.breadcrumb items={[%{label: "JustBoxes", navigate: "/justboxes"}, %{text: "New JustBox"}]} />
-      <.form for={@form} phx-submit="new" phx-change="validate" class="w-full space-y-4">
+      <.form for={@form} phx-submit="new" phx-change="validate" class="space-y-4 w-full">
         <h1 class="text-2xl font-bold">New JustBox</h1>
         <.input field={@form[:name]} label="Name" type="text" class="w-full" />
         <%= if @already_exists do %>
@@ -29,37 +29,37 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
           </div>
         <% end %>
 
-        <div class="w-full container flex flex-col items-center justify-center size-96 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg p-6 shadow-lg">
+        <div class="container flex flex-col justify-center items-center p-6 w-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg shadow-lg size-96">
           <%= if @uploads.project.entries == [] do %>
-            <div class="flex flex-col text-white items-center justify-center space-y-2 my-auto">
+            <div class="flex flex-col justify-center items-center my-auto space-y-2 text-white">
               <h1 class="text-3xl font-bold">Upload files here</h1>
               <.icon name="hero-arrow-down-tray" class="size-36" />
             </div>
           <% else %>
             <ul class="overflow-y-auto space-y-2 w-full rounded-lg">
               <%= for entry <- @uploads.project.entries do %>
-                <li class="flex text-white border border-white rounded-xl justify-between items-center">
+                <li class="flex justify-between items-center text-white rounded-xl border border-white">
                   <p class="pl-2 font-medium"><%= entry.client_name %></p>
                   <a
                     href="#"
                     phx-click="remove_upload"
                     phx-value-ref={entry.ref}
-                    class="font-bold bg-white text-blue-600 p-2 rounded-r-lg hover:bg-zinc-300"
+                    class="p-2 font-bold text-blue-600 bg-white rounded-r-lg hover:bg-zinc-300"
                   >
-                    Remove<.icon name="hero-trash-solid ml-2" class="size-6 bg-blue-600" />
+                    Remove<.icon name="hero-trash-solid ml-2" class="bg-blue-600 size-6" />
                   </a>
                 </li>
               <% end %>
             </ul>
           <% end %>
-          <div class="w-full mt-auto pt-4">
+          <div class="pt-4 mt-auto w-full">
             <.live_file_input class="hidden" upload={@uploads.project} />
             <input
               id="project"
               type="file"
               webkitdirectory={true}
               phx-hook="Upload"
-              class="w-full p-4 text-white rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 transparent"
+              class="p-4 w-full text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-xl transparent"
             />
           </div>
         </div>

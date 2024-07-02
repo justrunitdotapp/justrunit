@@ -3,9 +3,8 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
   def render(assigns) do
     ~H"""
-      <.svelte name="Jeditor" socket={@socket} />
     <%= if @error != false do %>
-      <div class="flex flex-col items-center max-w-4xl mx-auto mt-12">
+      <div class="flex flex-col items-center mx-auto mt-12 max-w-4xl">
         <h1 class="text-2xl font-bold"><%= @error %></h1>
         <p>
           If you believe this is an error, please contact us at
@@ -13,9 +12,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         </p>
       </div>
     <% else %>
-      <div class="flex flex-col items-center max-w-4xl mx-auto mt-12">
-        <p><%= @description %></p>
-      </div>
+      <.svelte name="Jeditor" socket={@socket} />
     <% end %>
     """
   end

@@ -12,8 +12,8 @@ config :justrunit,
   generators: [timestamp_type: :utc_datetime]
 
 config :ex_aws,
-  access_key_id: "VnEZaCFncBIT0QOqEPRC",
-  secret_access_key: "gTMPbsEhXjmxpXNnJ8W7a4VgfJdowT0bbUcPlv0B"
+  access_key_id: "ewTEgoF6QyZevFrm8VVw",
+  secret_access_key: "8N7LpGBdgyyt5Sakbcv4MEJBwAi0sqvqXdGHAGW8"
 
 config :ex_aws, :s3,
   scheme: "http://",
