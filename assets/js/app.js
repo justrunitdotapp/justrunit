@@ -24,9 +24,7 @@ import topbar from "../vendor/topbar";
 import { getHooks } from "live_svelte";
 import * as Components from "../svelte/**/*.svelte";
 
-console.log("Svelte hooks:", getHooks(Components));
-
-Hook = {
+x = {
   mounted() {
     this.el.addEventListener("input", (e) => {
       e.preventDefault();
@@ -42,14 +40,16 @@ Hook = {
     });
   },
 };
-console.log("Local hook:", Hook);
-let Hooks = { Upload: Hook, SvelteHook: getHooks(Components) };
+
+let Hooks = { ...getHooks(Components), Upload: x };
+console.log(Hooks);
+console.log(getHooks(Components));
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, {
-  hooks: Hooks,
+  hooks: getHooks(Components),
   params: { _csrf_token: csrfToken },
 });
 
