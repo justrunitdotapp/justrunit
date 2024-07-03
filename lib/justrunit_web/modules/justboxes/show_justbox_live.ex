@@ -1,5 +1,6 @@
 defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   use JustrunitWeb, :live_view
+  import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
 
   def render(assigns) do
     ~H"""
@@ -12,13 +13,13 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         </p>
       </div>
     <% else %>
-      <.svelte name="Jeditor" socket={@socket} />
     <% end %>
     """
   end
 
   import Ecto.Query
   alias Justrunit.Repo
+  alias JustrunitWeb.Modules
 
   def mount(_params, _session, socket) do
     socket = socket |> assign(error: false)
@@ -48,7 +49,29 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
             {:noreply, socket}
 
           justbox ->
-            socket = socket |> assign(description: justbox.description)
+            result =
+              ExAws.S3.list_objects("justrunit-dev", prefix: justbox.s3_key)
+              |> ExAws.request()
+
+            case result do
+              {:error, _} ->
+                socket = socket |> assign(error: "Failed to fetch justbox.")
+                {:noreply, socket}
+
+              {:ok, justboxes} ->
+                s3_keys =
+                  justboxes
+                  |> Map.get(:body)
+                  |> Map.get(:contents)
+                  |> Enum.map(fn jb -> jb.key end)
+
+                socket = socket |> assign(s3_keys: s3_keys)
+                IO.inspect(socket)
+
+                {:noreply, socket}
+            end
+
+            socket = socket |> assign(name: justbox.name)
             {:noreply, socket}
         end
     end

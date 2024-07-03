@@ -1,8 +1,7 @@
 <script>
-  import { onMount } from "svelte";
   import { Pane, Splitpanes } from "svelte-splitpanes";
-  import CodeMirror from "svelte-codemirror-editor";
-  //import { javascript } from "@codemirror/lang-javascript";
+  import { onMount } from "svelte";
+  import Monaco from "svelte-monaco";
 
   let textarea;
 
@@ -34,7 +33,7 @@
         </Pane>
         <Pane minSize={5} size={85}>
           <div class="p-1 h-full border-l-2 border-neutral-300">
-            <CodeMirror bind:value />
+            <Monaco />
           </div>
         </Pane>
       </Splitpanes>

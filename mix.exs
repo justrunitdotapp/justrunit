@@ -90,7 +90,11 @@ defmodule Justrunit.MixProject do
         "node build.js --deploy --prefix assets",
         "phx.digest"
       ],
-      "assets.deploy": ["tailwind default --minify", "node build.js --deploy --prefix assets", "phx.digest"]
+      "assets.deploy": [
+        "tailwind default --minify",
+        "node build.js --deploy --prefix assets",
+        "phx.digest"
+      ]
     ]
   end
 end

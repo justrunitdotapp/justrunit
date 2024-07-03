@@ -1,23 +1,24 @@
 defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
-  use Phoenix.LiveView
+  use JustrunitWeb, :live_view
 
   def render(assigns) do
     ~H"""
     <div>
       <header class="flex flex-col items-center">
-        <h1 class="text-4xl font-bold mt-24">Simple tool for sharing code</h1>
-        <h2 class="text-xl py-4">Easy interface, faster development</h2>
+        <h1 class="mt-24 text-4xl font-bold">Simple tool for sharing code</h1>
+        <h2 class="py-4 text-xl">Easy interface, faster development</h2>
         <a
           href="/sign-up"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+          class="px-4 py-2 font-bold text-white bg-blue-500 rounded transition hover:bg-blue-700"
         >
           Just Try It
         </a>
-        <p class="text-gray-700 text-sm">No credit card required</p>
+        <p class="text-sm text-gray-700">No credit card required</p>
       </header>
-      <section class="flex flex-col items-center mt-72 bg-gray-300">
-        <h3>Playground</h3>
-      </section>
+      <div class="mx-auto mt-72 max-w-7xl">
+        <h2 class="text-3xl font-medium text-center">Interactive Playground</h2>
+        <.svelte name="Jeditor" socket={@socket} />
+      </div>
     </div>
     """
   end
