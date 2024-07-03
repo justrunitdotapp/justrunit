@@ -1,7 +1,7 @@
 <script>
   import { Pane, Splitpanes } from "svelte-splitpanes";
   import { onMount } from "svelte";
-  import Monaco from "svelte-monaco";
+  // import Monaco from "svelte-monaco";
 
   let textarea;
 
@@ -33,7 +33,11 @@
         </Pane>
         <Pane minSize={5} size={85}>
           <div class="p-1 h-full border-l-2 border-neutral-300">
-            <Monaco />
+            <!-- <Monaco
+              theme="vs-light"
+              options={{ language: "elixir" }}
+              bind:value
+            />-->
           </div>
         </Pane>
       </Splitpanes>

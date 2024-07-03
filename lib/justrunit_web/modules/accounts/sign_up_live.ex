@@ -4,15 +4,15 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
 
   def render(assigns) do
     ~H"""
-    <div class="w-96 mx-auto mt-48 rounded-xl">
+    <div class="mx-auto mt-48 w-96 rounded-xl">
       <h1 class="text-2xl font-bold text-center">New Account</h1>
-      <p class="text-center py-2">
+      <p class="py-2 text-center">
         Click
-        <.link navigate={~p"/sign-in"} class="text-blue-500 hover:underline text-lg">here</.link>
+        <.link navigate={~p"/sign-in"} class="text-lg text-blue-500 hover:underline">here</.link>
         to sign in
       </p>
       <%= if @check_errors do %>
-        <div class="bg-red-500 text-white p-2 rounded-lg">
+        <div class="p-2 text-white bg-red-500 rounded-lg">
           <%= @form.errors %>
         </div>
       <% end %>
@@ -29,17 +29,17 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
           field={@form[:email]}
           type="email"
           label="Email"
-          class="w-full p-2 border-2 border-blue-500 rounded-lg"
+          class="p-2 w-full rounded-lg border-2 border-blue-500"
         />
         <.input
           field={@form[:password]}
           label="Password"
           type="password"
-          class="w-full p-2 border-2 border-blue-500 rounded-lg"
+          class="p-2 w-full rounded-lg border-2 border-blue-500"
         />
         <button
           type="submit"
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition w-full"
+          class="px-4 py-2 w-full font-semibold text-white bg-blue-500 rounded-lg transition hover:bg-blue-600"
         >
           Register
         </button>
@@ -51,7 +51,6 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
   alias JustrunitWeb.Modules.Accounts.User
   alias JustrunitWeb.Modules.Accounts
   alias Justrunit.Repo
-  import Ecto.Query
 
   def mount(_params, _session, socket) do
     changeset = Accounts.change_user_registration(%User{})

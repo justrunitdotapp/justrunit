@@ -93,7 +93,6 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
 
   @impl Phoenix.LiveView
   def handle_event("validate", _params, socket) do
-    IO.inspect(socket.assigns.uploads.project.entries)
     {:noreply, socket}
   end
 
@@ -110,8 +109,9 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
       |> Map.put("user_id", socket.assigns.current_user.id)
       |> Map.put("slug", Slug.slugify(params["name"]))
       |> Map.put("s3_key", "#{socket.assigns.current_user.id}/#{Slug.slugify(params["name"])}")
+    
 
-    with false <- Repo.exists?(from j in Justbox, where: j.slug == ^params["slug"]),
+    with false <- Repo.exists?(from j in Justbox, where: j.slug == ^params["slug"] and j.user_id == ^socket.assigns.current_user.id),
          results <-
            consume_uploaded_entries(socket, :project, fn %{path: path}, entry ->
              ExAws.S3.put_object(

@@ -1,6 +1,5 @@
 defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   use JustrunitWeb, :live_view
-  import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
 
   def render(assigns) do
     ~H"""
@@ -19,7 +18,6 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
   import Ecto.Query
   alias Justrunit.Repo
-  alias JustrunitWeb.Modules
 
   def mount(_params, _session, socket) do
     socket = socket |> assign(error: false)

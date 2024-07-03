@@ -9,7 +9,6 @@ defmodule Justrunit.Repo.Migrations.AddJustboxesTable do
       timestamps()
     end
 
-    create unique_index(:justboxes, [:name])
     create unique_index(:justboxes, [:slug])
   end
 end

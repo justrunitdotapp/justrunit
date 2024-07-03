@@ -8,17 +8,17 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col items-center max-w-4xl mx-auto mt-12">
-      <div class="flex items-baseline justify-between w-full">
+    <div class="flex flex-col items-center mx-auto mt-12 max-w-4xl">
+      <div class="flex justify-between items-baseline w-full">
         <h1 class="text-2xl font-bold">Your JustBoxes</h1>
         <.link
-          class="text-white hover:bg-neutral-700 border-2 bg-neutral-900 p-2 rounded-lg font-semibold"
+          class="p-2 font-semibold text-white rounded-lg border-2 hover:bg-neutral-700 bg-neutral-900"
           patch="/new-justbox"
         >
           New JustBox
         </.link>
       </div>
-      <div class="flex flex-col w-full my-8">
+      <div class="flex flex-col my-8 w-full">
         <.justboxes_list_component justboxes={@justboxes} user_handle={@user_handle} />
       </div>
       <%= if @pages_count > 1 do %>
