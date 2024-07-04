@@ -3,7 +3,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
   def render(assigns) do
     ~H"""
-    <%= if @error != false do %>
+    <%= if @error do %>
       <div class="flex flex-col items-center mx-auto mt-12 max-w-4xl">
         <h1 class="text-2xl font-bold"><%= @error %></h1>
         <p>
@@ -12,6 +12,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         </p>
       </div>
     <% else %>
+      <.svelte name="Jeditor" props={%{s3_keys: @s3_keys, justbox_name: @justbox_name}} socket={@socket} />
     <% end %>
     """
   end
@@ -63,10 +64,8 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
                   |> Map.get(:contents)
                   |> Enum.map(fn jb -> jb.key end)
 
-                socket = socket |> assign(s3_keys: s3_keys)
-                IO.inspect(socket)
 
-                {:noreply, socket}
+                {:noreply, assign(socket, s3_keys: s3_keys)}
             end
 
             socket = socket |> assign(name: justbox.name)
