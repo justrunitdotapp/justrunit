@@ -109,9 +109,12 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
       |> Map.put("user_id", socket.assigns.current_user.id)
       |> Map.put("slug", Slug.slugify(params["name"]))
       |> Map.put("s3_key", "#{socket.assigns.current_user.id}/#{Slug.slugify(params["name"])}")
-    
 
-    with false <- Repo.exists?(from j in Justbox, where: j.slug == ^params["slug"] and j.user_id == ^socket.assigns.current_user.id),
+    with false <-
+           Repo.exists?(
+             from j in Justbox,
+               where: j.slug == ^params["slug"] and j.user_id == ^socket.assigns.current_user.id
+           ),
          results <-
            consume_uploaded_entries(socket, :project, fn %{path: path}, entry ->
              ExAws.S3.put_object(

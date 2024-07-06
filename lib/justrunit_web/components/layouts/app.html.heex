@@ -1,20 +1,20 @@
-<nav class="flex justify-end m-2 space-x-6 items-center select-none">
+<nav class="flex justify-end items-center m-2 space-x-6 select-none">
   <.link
     navigate={~p"/justboxes"}
-    class="text-white font-extrabold bg-gradient-to-r from-blue-500 to-blue-600 text-2xl px-4 py-2 rounded-lg italic tracking-wider skew-x-12 hover:scale-105 transition-all duration-200 mr-auto"
+    class="px-4 py-2 mr-auto text-2xl italic font-extrabold tracking-wider text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg transition-all duration-200 skew-x-12 hover:scale-105"
   >
     Just Run It
   </.link>
   <.link
     patch="/settings"
-    class="border border-blue-500 hover:border-blue-600 bg-blue-500 px-4 text-white py-2 text-sm rounded-lg font-medium hover:bg-blue-600 transition-all duration-300"
+    class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg border border-blue-500 transition-all duration-300 hover:border-blue-600 hover:bg-blue-600"
   >
     Settings
   </.link>
   <.link
     href={~p"/users/log_out"}
     method="delete"
-    class="border border-blue-500 hover:border-blue-500 text-blue-500 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-500 hover:text-white transition-all duration-300"
+    class="px-4 py-2 text-sm font-medium text-blue-500 rounded-lg border border-blue-500 transition-all duration-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white"
   >
     Log out
   </.link>

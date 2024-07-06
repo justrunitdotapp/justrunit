@@ -12,7 +12,11 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         </p>
       </div>
     <% else %>
-      <.svelte name="Jeditor" props={%{s3_keys: @s3_keys, justbox_name: @justbox_name}} socket={@socket} />
+      <.svelte
+        name="Jeditor"
+        props={%{s3_keys: @s3_keys, justbox_name: @justbox_name}}
+        socket={@socket}
+      />
     <% end %>
     """
   end
@@ -26,51 +30,129 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_params(params, _uri, socket) do
-    user =
-      from(u in JustrunitWeb.Modules.Accounts.User, where: u.handle == ^params["handle"])
-      |> Repo.one()
+    {justbox_name, s3_keys} = load_justbox(params["handle"], params["justbox_slug"], socket)
 
-    case user do
-      nil ->
+    socket = socket |> assign(justbox_name: justbox_name, s3_keys: s3_keys)
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "refresh_explorer",
+        %{"handle" => handle, "justbox_slug" => justbox_slug},
+        socket
+      ) do
+    {justbox_name, s3_keys} = load_justbox(handle, justbox_slug, socket)
+
+    socket = socket |> assign(justbox_name: justbox_name, s3_keys: s3_keys)
+    {:noreply, socket}
+  end
+
+  def handle_event("new_file", %{"handle" => handle, "file_s3_key" => file_s3_key}, socket) do
+    {:ok, user} = get_user_by_handle(handle)
+
+    ExAws.S3.put_object(
+      "justrunit-dev",
+      "#{user.id}/#{socket.assigns.justbox_name}/",
+      ""
+    )
+    |> ExAws.request()
+    |> case do
+      {:ok, file} ->
+        updated_keys = [file | socket.assigns.s3_keys]
+        socket = socket |> assign(s3_keys: updated_keys)
+        {:noreply, socket}
+
+      {:error, _reason} ->
+        socket = socket |> put_flash(:error, "Failed to create a file")
+        {:noreply, socket}
+    end
+  end
+
+  def handle_event("new_folder", %{"handle" => handle}, socket) do
+    {:ok, user} = get_user_by_handle(handle)
+
+    ExAws.S3.put_object(
+      "justrunit-dev",
+      "#{user.id}/#{socket.assigns.justbox_name}/folder3/",
+      ""
+    )
+    |> ExAws.request()
+    |> case do
+      {:ok, folder} ->
+        {:noreply, socket}
+
+      {:error, _reason} ->
+        socket = socket |> put_flash(:error, "Failed to create a folder")
+        {:noreply, socket}
+    end
+  end
+
+  def load_justbox(user_handle, justbox_slug, socket) do
+    with {:ok, user} <- get_user_by_handle(user_handle),
+         {:ok, justbox} <- get_justbox_by_slug(user.id, justbox_slug),
+         {:ok, {:ok, justboxes}} <- list_s3_objects(justbox.s3_key) do
+      s3_keys =
+        justboxes
+        |> Map.get(:body)
+        |> Map.get(:contents)
+        |> Enum.map(fn jb -> jb.key end)
+        |> Enum.map(&(String.split(&1, "/") |> Enum.drop(2) |> Enum.join("/")))
+
+      {justbox.name, s3_keys}
+    else
+      {:error, :user_is_nil} ->
         socket = socket |> assign(error: "User not found")
         {:noreply, socket}
 
-      user ->
-        justbox =
-          from(j in JustrunitWeb.Modules.Justboxes.Justbox,
-            where: j.user_id == ^user.id and j.slug == ^params["justbox_slug"]
-          )
-          |> Repo.one()
+      {:error, :justbox_is_nil} ->
+        socket = socket |> assign(error: "Justbox not found")
+        {:noreply, socket}
 
-        case justbox do
-          nil ->
-            socket = socket |> assign(error: "Justbox not found")
-            {:noreply, socket}
+      {:error, :failed_to_fetch_from_s3} ->
+        socket = socket |> assign(error: "Failed to fetch justbox.")
+        {:noreply, socket}
+    end
+  end
 
-          justbox ->
-            result =
-              ExAws.S3.list_objects("justrunit-dev", prefix: justbox.s3_key)
-              |> ExAws.request()
+  def handle_event("refresh_explorer", _, socket) do
+    {:noreply, socket}
+  end
 
-            case result do
-              {:error, _} ->
-                socket = socket |> assign(error: "Failed to fetch justbox.")
-                {:noreply, socket}
+  defp get_user_by_handle(handle) do
+    user =
+      from(u in JustrunitWeb.Modules.Accounts.User, where: u.handle == ^handle)
+      |> Repo.one()
 
-              {:ok, justboxes} ->
-                s3_keys =
-                  justboxes
-                  |> Map.get(:body)
-                  |> Map.get(:contents)
-                  |> Enum.map(fn jb -> jb.key end)
+    if user do
+      {:ok, user}
+    else
+      {:error, :user_is_nil}
+    end
+  end
 
+  defp get_justbox_by_slug(user_id, slug) do
+    justbox =
+      from(j in JustrunitWeb.Modules.Justboxes.Justbox,
+        where: j.user_id == ^user_id and j.slug == ^slug
+      )
+      |> Repo.one()
 
-                {:noreply, assign(socket, s3_keys: s3_keys)}
-            end
+    if justbox do
+      {:ok, justbox}
+    else
+      {:error, :justbox_is_nil}
+    end
+  end
 
-            socket = socket |> assign(name: justbox.name)
-            {:noreply, socket}
-        end
+  defp list_s3_objects(s3_key) do
+    justboxes =
+      ExAws.S3.list_objects("justrunit-dev", prefix: s3_key)
+      |> ExAws.request()
+
+    if justboxes do
+      {:ok, justboxes}
+    else
+      {:error, :failed_to_fetch_from_s3}
     end
   end
 end

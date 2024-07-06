@@ -17,13 +17,26 @@ defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
       </header>
       <div class="mx-auto mt-72 max-w-7xl">
         <h2 class="text-3xl font-medium text-center">Interactive Playground</h2>
-        <.svelte name="Jeditor" socket={@socket} />
+        <.svelte
+          name="Jeditor"
+          props={%{s3_keys: @s3_keys, justbox_name: @justbox_name}}
+          socket={@socket}
+        />
       </div>
     </div>
     """
   end
 
+  alias JustrunitWeb.Modules.Justboxes.ShowJustboxLive
+
   def mount(params, session, socket) do
     {:ok, socket, layout: {JustrunitWeb.Layouts, :guest}}
+  end
+
+  def handle_params(params, _uri, socket) do
+    {justbox_name, s3_keys} = ShowJustboxLive.load_justbox("user1", "test", socket)
+
+    socket = socket |> assign(justbox_name: justbox_name, s3_keys: s3_keys)
+    {:noreply, socket}
   end
 end

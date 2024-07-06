@@ -8,7 +8,5 @@ defmodule Justrunit.Repo.Migrations.AddJustboxesTable do
       add :description, :string, null: false
       timestamps()
     end
-
-    create unique_index(:justboxes, [:slug])
   end
 end
