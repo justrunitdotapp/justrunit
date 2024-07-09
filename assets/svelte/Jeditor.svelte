@@ -1,7 +1,6 @@
 <script>
   import { Pane, Splitpanes } from "svelte-splitpanes";
   import { onMount } from "svelte";
-  // import Monaco from "svelte-monaco";
   import {
     Icon,
     DocumentPlus,
@@ -13,10 +12,13 @@
   export let s3_keys;
   export let justbox_name;
   export let live;
+  import CodeMirror from "svelte-codemirror-editor";
+  // import { javascript } from "@codemirror/lang-javascript";
+  import { basicSetup } from "codemirror";
+  import { EditorView } from "@codemirror/view";
+  import { elixir } from "codemirror-lang-elixir";
 
-  let textarea;
-
-  let value = "Test";
+  let value = "IO.puts('test')";
   let user_handle = "";
   let dirScope = "";
 
@@ -55,10 +57,40 @@
     }
   }
 
+  import { Wunderbaum } from "wunderbaum";
+
+  let treeContainer;
+
+  const treeData = [
+    {
+      title: "Root",
+      folder: true,
+      children: [
+        { title: "Child 1" },
+        {
+          title: "Child 2",
+          folder: true,
+          children: [{ title: "Grandchild 2.1" }, { title: "Grandchild 2.2" }],
+        },
+      ],
+    },
+  ];
+
   onMount(() => {
     let currentUrl = window.location.pathname;
     let urlParts = currentUrl.split("/").filter(Boolean);
     user_handle = urlParts[0];
+    const tree = new Wunderbaum({
+      element: treeContainer,
+      source: treeData,
+      activate: (e) => {
+        console.log("Node activated:", e.node.title);
+      },
+    });
+    new EditorView({
+      parent: document.querySelector("#editor"),
+      extensions: [basicSetup, elixir()],
+    });
   });
 </script>
 
@@ -104,36 +136,14 @@
                   </button>
                 </div>
               </div>
-              <ul>
-                {#each s3_keys as s3_key}
-                  {#if s3_key.charAt(s3_key.length - 1) === "/"}
-                    <li class="flex hover:bg-slate-300 group">
-                      <button
-                        class="flex p-1 w-full text-left"
-                        on:click={() => setDirScope(s3_key)}>{s3_key}</button
-                      >
-                    </li>
-                  {:else}
-                    <li class="flex hover:bg-slate-300 group">
-                      <button
-                        on:click={() => openFile(s3_key)}
-                        class="flex p-1 w-full text-left">{s3_key}</button
-                      >
-                    </li>
-                  {/if}
-                {/each}
-              </ul>
+              <div bind:this={treeContainer}></div>
             </div>
           {/if}
         </Pane>
         <Pane minSize={5} size={80}>
           <div class="p-1 h-full border-l-2 border-neutral-300">
             {dirScope}
-            <!-- <Monaco
-              theme="vs-light"
-              options={{ language: "elixir" }}
-              bind:value
-            />-->
+            <CodeMirror bind:value lang={elixir()} />
           </div>
         </Pane>
       </Splitpanes>
