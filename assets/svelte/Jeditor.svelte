@@ -6,6 +6,7 @@
     DocumentPlus,
     FolderPlus,
     ArrowPath,
+    XMark,
     PencilSquare,
     Trash,
   } from "svelte-hero-icons";
@@ -16,12 +17,17 @@
   import CodeMirror from "svelte-codemirror-editor";
   // import { javascript } from "@codemirror/lang-javascript";
   import { basicSetup } from "codemirror";
-  import { EditorView } from "@codemirror/view";
+  import { EditorView, keymap } from "@codemirror/view";
+  import { EditorState } from "@codemirror/state";
+  import { vscodeKeymap } from "@replit/codemirror-vscode-keymap";
   import { elixir } from "codemirror-lang-elixir";
   import { Wunderbaum } from "wunderbaum";
 
   let user_handle = "";
-  let dirScope = "";
+
+  function getFileName(path) {
+    return path.split("/").pop().split("\\").pop();
+  }
 
   function refreshExplorer() {
     live.pushEvent("refresh_explorer", {
@@ -41,10 +47,6 @@
     live.pushEvent("new_folder", {
       handle: user_handle,
     });
-  }
-
-  function setDirScope(path) {
-    dirScope = path;
   }
 
   let treeContainer;
@@ -82,9 +84,38 @@
 
     return [root];
   }
-  function fetchFile(node) {
-    live.pushEvent("fetch_file", { s3_key: node.data.path });
+
+  function addTab(s3_key) {
+    const tab = document.createElement("button");
+    tab.setAttribute("data-s3-key", s3_key);
+    tab.addEventListener("click", openFile());
+    tab.textContent = getFileName(s3_key);
+    tab.className = "pb-2 px-2 mb-2 border-b-2 border-blue-500";
+
+    document.getElementById("tabs").appendChild(tab);
   }
+
+  function openFile(s3_key) {
+    currentFile = s3_key;
+    live.pushEvent("fetch_file", { s3_key: s3_key });
+    addTab(node.data.path);
+  }
+
+  let currentFile = "";
+
+  const saveKeymap = keymap.of([
+    {
+      key: "Ctrl-s",
+      run: (view) => {
+        live.pushEvent("update_file", {
+          s3_key: currentFile,
+          content: view.state.doc.toString(),
+        });
+        return true;
+      },
+      preventDefault: true,
+    },
+  ]);
 
   onMount(() => {
     treeData = createTreeFromPaths(s3_keys);
@@ -96,13 +127,16 @@
       source: treeData,
       click: (e) => {
         if (!e.node.data.folder) {
-          fetchFile(e.node);
+          openFile(e.node);
         }
       },
     });
     new EditorView({
+      state: EditorState.create({
+        value,
+        extensions: [keymap.of(vscodeKeymap), elixir()],
+      }),
       parent: document.querySelector("#editor"),
-      extensions: [basicSetup, elixir()],
     });
   });
 </script>
@@ -155,8 +189,8 @@
         </Pane>
         <Pane minSize={5} size={80}>
           <div class="p-1 h-full border-l-2 border-neutral-300">
-            {dirScope}
-            <CodeMirror bind:value lang={elixir()} />
+            <div id="tabs" class="space-x-1"></div>
+            <CodeMirror bind:value lang={elixir()} extensions={[saveKeymap]} />
           </div>
         </Pane>
       </Splitpanes>

@@ -68,7 +68,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
     ExAws.S3.put_object(
       "justrunit-dev",
-      "#{user.id}/#{socket.assigns.justbox_name}/",
+      "#{user.id}/#{socket.assigns.justbox_name}/123123",
       ""
     )
     |> ExAws.request()
@@ -80,6 +80,19 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
       {:error, _reason} ->
         socket = socket |> put_flash(:error, "Failed to create a file")
+        {:noreply, socket}
+    end
+  end
+
+  def handle_event("update_file", %{"s3_key" => s3_key, "content" => content}, socket) do
+    ExAws.S3.put_object("justrunit-dev", "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}", content)
+    |> ExAws.request()
+    |> case do
+      {:ok, %{status_code: 200}} -> {:noreply, socket}
+      {:error, error} -> 
+      socket = socket 
+        |> put_flash(:error, "Failed to save") 
+        
         {:noreply, socket}
     end
   end
