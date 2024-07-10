@@ -12,13 +12,14 @@
   export let s3_keys;
   export let justbox_name;
   export let live;
+  export let value;
   import CodeMirror from "svelte-codemirror-editor";
   // import { javascript } from "@codemirror/lang-javascript";
   import { basicSetup } from "codemirror";
   import { EditorView } from "@codemirror/view";
   import { elixir } from "codemirror-lang-elixir";
+  import { Wunderbaum } from "wunderbaum";
 
-  let value = "IO.puts('test')";
   let user_handle = "";
   let dirScope = "";
 
@@ -46,45 +47,57 @@
     dirScope = path;
   }
 
-  function openFile(path) {
-    let pathArray = path.split("/");
-    if (pathArray[pathArray.length - 1].endsWith("/")) {
-      setDirScope(path);
-    } else {
-      pathArray.pop();
-      let new_path = pathArray.join("/");
-      setDirScope(new_path);
-    }
-  }
-
-  import { Wunderbaum } from "wunderbaum";
-
   let treeContainer;
 
-  const treeData = [
-    {
-      title: "Root",
-      folder: true,
-      children: [
-        { title: "Child 1" },
-        {
-          title: "Child 2",
-          folder: true,
-          children: [{ title: "Grandchild 2.1" }, { title: "Grandchild 2.2" }],
-        },
-      ],
-    },
-  ];
+  let treeData = [];
+
+  function createTreeFromPaths(paths) {
+    const root = { title: "Root", folder: true, children: [] };
+
+    paths.forEach((path) => {
+      const parts = path.split("/");
+      let currentNode = root;
+      let currentPath = "";
+
+      parts.forEach((part, index) => {
+        currentPath += (index === 0 ? "" : "/") + part;
+        let existingNode = currentNode.children.find(
+          (child) => child.title === part
+        );
+
+        if (!existingNode) {
+          const newNode = {
+            title: part,
+            folder: index < parts.length - 1,
+            children: [],
+            path: currentPath,
+          };
+          currentNode.children.push(newNode);
+          existingNode = newNode;
+        }
+
+        currentNode = existingNode;
+      });
+    });
+
+    return [root];
+  }
+  function fetchFile(node) {
+    live.pushEvent("fetch_file", { s3_key: node.data.path });
+  }
 
   onMount(() => {
+    treeData = createTreeFromPaths(s3_keys);
     let currentUrl = window.location.pathname;
     let urlParts = currentUrl.split("/").filter(Boolean);
     user_handle = urlParts[0];
     const tree = new Wunderbaum({
       element: treeContainer,
       source: treeData,
-      activate: (e) => {
-        console.log("Node activated:", e.node.title);
+      click: (e) => {
+        if (!e.node.data.folder) {
+          fetchFile(e.node);
+        }
       },
     });
     new EditorView({
@@ -94,7 +107,7 @@
   });
 </script>
 
-<Splitpanes style="height: 50vh; padding: 0.6%;" size={100}>
+<Splitpanes style="height: 50vh; padding: 0.6%;">
   <Pane minSize={5} size={60}>
     <div class="p-2 text-sm rounded-lg border border-blue-400 size-full">
       <Splitpanes style="padding: 0.6%;">

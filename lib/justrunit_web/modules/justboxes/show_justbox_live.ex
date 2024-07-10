@@ -14,7 +14,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     <% else %>
       <.svelte
         name="Jeditor"
-        props={%{s3_keys: @s3_keys, justbox_name: @justbox_name}}
+        props={%{s3_keys: @s3_keys, justbox_name: @justbox_name, value: @file}}
         socket={@socket}
       />
     <% end %>
@@ -25,15 +25,30 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   alias Justrunit.Repo
 
   def mount(_params, _session, socket) do
-    socket = socket |> assign(error: false)
+    socket = socket |> assign(error: false) |> assign(file: "")
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
   end
 
   def handle_params(params, _uri, socket) do
     {justbox_name, s3_keys} = load_justbox(params["handle"], params["justbox_slug"], socket)
+    user = get_user_by_handle(params["handle"])
 
-    socket = socket |> assign(justbox_name: justbox_name, s3_keys: s3_keys)
-    {:noreply, socket}
+    case user do
+      {:ok, user} ->
+        socket =
+          socket
+          |> assign(
+            justbox_name: justbox_name,
+            s3_keys: s3_keys,
+            current_justbox_owner_id: user.id
+          )
+
+        {:noreply, socket}
+
+      {:error, reason} ->
+        socket = socket |> put_flash(:error, "Error while loading justbox")
+        {:noreply, socket}
+    end
   end
 
   def handle_event(
@@ -42,6 +57,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         socket
       ) do
     {justbox_name, s3_keys} = load_justbox(handle, justbox_slug, socket)
+    IO.inspect(socket.assigns)
 
     socket = socket |> assign(justbox_name: justbox_name, s3_keys: s3_keys)
     {:noreply, socket}
@@ -87,6 +103,26 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     end
   end
 
+  def handle_event("fetch_file", %{"s3_key" => s3_key}, socket) do
+    res =
+      ExAws.S3.get_object(
+        "justrunit-dev",
+        "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}"
+      )
+      |> ExAws.request()
+
+    case res do
+      {:ok, file} ->
+        socket = socket |> assign(file: file.body)
+        {:noreply, socket}
+
+      {:error, reason} ->
+        IO.inspect(reason)
+        socket = socket |> put_flash(:error, "Failed to fetch a file")
+        {:noreply, socket}
+    end
+  end
+
   def load_justbox(user_handle, justbox_slug, socket) do
     with {:ok, user} <- get_user_by_handle(user_handle),
          {:ok, justbox} <- get_justbox_by_slug(user.id, justbox_slug),
@@ -114,19 +150,20 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     end
   end
 
-  def handle_event("refresh_explorer", _, socket) do
-    {:noreply, socket}
-  end
-
   defp get_user_by_handle(handle) do
     user =
       from(u in JustrunitWeb.Modules.Accounts.User, where: u.handle == ^handle)
       |> Repo.one()
 
-    if user do
-      {:ok, user}
-    else
-      {:error, :user_is_nil}
+    case user do
+      user ->
+        {:ok, user}
+
+      {:error, reason} ->
+        {:error, reason}
+
+      nil ->
+        {:error, :user_is_nil}
     end
   end
 
