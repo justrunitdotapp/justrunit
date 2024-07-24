@@ -41,3 +41,6 @@ npm-debug.log
 
 # Ignore ssr build for svelte.
 /priv/svelte/
+
+# Ignore file for environmental variables
+.env

@@ -17,11 +17,11 @@ defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
       </header>
       <div class="mx-auto mt-72 max-w-7xl">
         <h2 class="text-3xl font-medium text-center">Interactive Playground</h2>
-        <.svelte
+        <!-- <.svelte
           name="Jeditor"
           props={%{s3_keys: @s3_keys, justbox_name: @justbox_name}}
           socket={@socket}
-        />
+        /> -->
       </div>
     </div>
     """

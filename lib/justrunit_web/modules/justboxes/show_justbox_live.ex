@@ -12,11 +12,11 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         </p>
       </div>
     <% else %>
-      <.svelte
+      <!-- <.svelte
         name="Jeditor"
         props={%{s3_keys: @s3_keys, justbox_name: @justbox_name, value: @file}}
         socket={@socket}
-      />
+      /> -->
     <% end %>
     """
   end
@@ -85,14 +85,21 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("update_file", %{"s3_key" => s3_key, "content" => content}, socket) do
-    ExAws.S3.put_object("justrunit-dev", "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}", content)
+    ExAws.S3.put_object(
+      "justrunit-dev",
+      "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}",
+      content
+    )
     |> ExAws.request()
     |> case do
-      {:ok, %{status_code: 200}} -> {:noreply, socket}
-      {:error, error} -> 
-      socket = socket 
-        |> put_flash(:error, "Failed to save") 
-        
+      {:ok, %{status_code: 200}} ->
+        {:noreply, socket}
+
+      {:error, error} ->
+        socket =
+          socket
+          |> put_flash(:error, "Failed to save")
+
         {:noreply, socket}
     end
   end

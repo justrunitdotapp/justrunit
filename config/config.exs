@@ -11,15 +11,6 @@ config :justrunit,
   ecto_repos: [Justrunit.Repo],
   generators: [timestamp_type: :utc_datetime]
 
-config :ex_aws,
-  access_key_id: "2IRfwf0azTKfATzav1LU",
-  secret_access_key: "iHqGMI2yO9sCEUj3aYgF9nRuAZdagsZ6gbXwL3I9"
-
-config :ex_aws, :s3,
-  scheme: "http://",
-  host: "localhost",
-  port: 9000
-
 # Configures the endpoint
 config :justrunit, JustrunitWeb.Endpoint,
   url: [host: "localhost"],

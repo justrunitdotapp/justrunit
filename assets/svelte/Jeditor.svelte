@@ -98,7 +98,7 @@
   function openFile(s3_key) {
     currentFile = s3_key;
     live.pushEvent("fetch_file", { s3_key: s3_key });
-    addTab(node.data.path);
+    addTab(s3_key);
   }
 
   let currentFile = "";

@@ -7,6 +7,9 @@
     "svelte-preprocess": "^6.0.1"
   },
   "dependencies": {
+    "esbuild": "^0.16.17",
+    "esbuild-plugin-import-glob": "^0.1.1",
+    "esbuild-svelte": "^0.8.1",
     "@codemirror/lang-javascript": "^6.2.2",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "codemirror-lang-elixir": "^4.0.0",

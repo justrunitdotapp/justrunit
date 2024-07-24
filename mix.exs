@@ -9,7 +9,12 @@ defmodule Justrunit.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: [
+        justrunit: [
+          include_executables_for: [:unix]
+        ]
+      ]
     ]
   end
 
@@ -87,12 +92,8 @@ defmodule Justrunit.MixProject do
       "assets.build": ["tailwind justrunit", "esbuild justrunit"],
       "assets.deploy": [
         "tailwind default --minify",
-        "node build.js --deploy --prefix assets",
-        "phx.digest"
-      ],
-      "assets.deploy": [
-        "tailwind default --minify",
-        "node build.js --deploy --prefix assets",
+        #"cmd node assets/build.js --deploy --prefix assets",
+        "cmd --cd assets node build.js --deploy",
         "phx.digest"
       ]
     ]
