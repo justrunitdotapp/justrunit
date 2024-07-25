@@ -11,6 +11,11 @@ defmodule JustrunitWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug Plug.Static,
+      at: "/",
+      from: :justrunit,
+      gzip: false,
+      only: ~w(assets fonts images favicon.ico robots.txt)
   end
 
   pipeline :api do
@@ -79,6 +84,6 @@ defmodule JustrunitWeb.Router do
   scope "/", JustrunitWeb.Modules do
     pipe_through :browser
 
-    live "/:handle/:justbox_slug", Justboxes.ShowJustboxLive, :show_justbox
+    #live "/:handle/:justbox_slug", Justboxes.ShowJustboxLive, :show_justbox
   end
 end
