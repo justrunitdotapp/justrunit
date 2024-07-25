@@ -176,14 +176,13 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
       |> Repo.one()
 
     case user do
+      nil ->
+        {:error, :user_is_nil}
       user ->
         {:ok, user}
 
       {:error, reason} ->
         {:error, reason}
-
-      nil ->
-        {:error, :user_is_nil}
     end
   end
 
