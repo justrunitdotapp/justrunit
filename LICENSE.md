@@ -68,7 +68,7 @@ and even if it is provided free of charge.
 Use of the software for the benefit of your company is use for
 a permitted purpose if your company has fewer than 100 total
 individuals working as employees and independent contractors,
-and less than 1,000,000 USD (2019) total revenue in the prior
+and less than 100,000 USD (2019) total revenue in the prior
 tax year. Adjust this revenue threshold for inflation according
 to the United States Bureau of Labor Statistics' consumer price
 index for all urban consumers, U.S. city average, for all items,
