@@ -62,6 +62,9 @@ WORKDIR /app
 
 # compile assets
 RUN mix assets.deploy
+WORKDIR /app/assets/css
+RUN cat app.css
+WORKDIR /app
 
 # Compile the release
 RUN mix compile

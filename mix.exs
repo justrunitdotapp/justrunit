@@ -91,7 +91,7 @@ defmodule Justrunit.MixProject do
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind justrunit", "esbuild justrunit"],
       "assets.deploy": [
-        "tailwind default --minify",
+        "tailwind default --minify --output ./priv/static/assets/app.css",
         #"cmd node assets/build.js --deploy --prefix assets",
         "cmd --cd assets node build.js --deploy",
         "phx.digest"
