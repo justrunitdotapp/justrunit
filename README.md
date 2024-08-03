@@ -2,6 +2,14 @@
 
 Is a source available platform to host and share interactive code snippets.
 
+## Development Environment
+
+To start JustRunIt in development environment run:
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
 ## License
 
 With our publicly available license you can:
