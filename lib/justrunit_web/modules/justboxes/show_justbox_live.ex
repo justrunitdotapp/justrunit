@@ -67,7 +67,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     {:ok, user} = get_user_by_handle(handle)
 
     ExAws.S3.put_object(
-      "justrunit-dev",
+      "justrunit",
       "#{user.id}/#{socket.assigns.justbox_name}/123123",
       ""
     )
@@ -86,7 +86,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
   def handle_event("update_file", %{"s3_key" => s3_key, "content" => content}, socket) do
     ExAws.S3.put_object(
-      "justrunit-dev",
+      "justrunit",
       "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}",
       content
     )
@@ -108,7 +108,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     {:ok, user} = get_user_by_handle(handle)
 
     ExAws.S3.put_object(
-      "justrunit-dev",
+      "justrunit",
       "#{user.id}/#{socket.assigns.justbox_name}/folder3/",
       ""
     )
@@ -126,7 +126,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   def handle_event("fetch_file", %{"s3_key" => s3_key}, socket) do
     res =
       ExAws.S3.get_object(
-        "justrunit-dev",
+        "justrunit",
         "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}"
       )
       |> ExAws.request()
@@ -202,7 +202,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
   defp list_s3_objects(s3_key) do
     justboxes =
-      ExAws.S3.list_objects("justrunit-dev", prefix: s3_key)
+      ExAws.S3.list_objects("justrunit", prefix: s3_key)
       |> ExAws.request()
 
     if justboxes do

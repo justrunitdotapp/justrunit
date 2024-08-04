@@ -26,7 +26,7 @@ config :ex_aws,
 
 config :ex_aws, :s3,
   scheme: "http://",
-  host: "localhost",
+  host: "minio",
   port: 9000
 
 if config_env() == :prod do

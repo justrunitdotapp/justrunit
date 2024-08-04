@@ -118,7 +118,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
          results <-
            consume_uploaded_entries(socket, :project, fn %{path: path}, entry ->
              ExAws.S3.put_object(
-               "justrunit-dev",
+               "justrunit",
                "#{params["s3_key"]}/#{entry.client_name}",
                File.read!(path)
              )

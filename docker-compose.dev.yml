@@ -11,7 +11,7 @@ services:
       - MIX_ENV=dev
       - PHX_HOST=localhost
       - SECRET_KEY_BASE=DElG+3akCkNp+QmIx3kmvmjXMUni6zLZU5n9B9sF++u+4J+EfiOsxYGpzYqkyrh+
-      - DATABASE_URL=ecto://postgres:postgres@pg/justrunit_dev
+      - DATABASE_URL=ecto://postgres:postgres@pg/justrunit
       - MINIO_URL=http://minio:9000
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
@@ -42,6 +42,18 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
     command: server /data --console-address ":9001"
+
+  setup_buckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add jri_minio http://minio:9000 minioadmin minioadmin &&
+      /usr/bin/mc mb jri_minio/justrunit &&
+      /usr/bin/mc policy download jri_minio/justrunit &&
+      exit 0
+      "
 
 volumes:
   pgdata:

@@ -47,7 +47,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
       case Justrunit.Repo.delete(justbox) do
         {:ok, _} ->
           res =
-            ExAws.S3.list_objects("justrunit-dev", prefix: justbox.s3_key)
+            ExAws.S3.list_objects("justrunit", prefix: justbox.s3_key)
             |> ExAws.request()
 
           case res do
@@ -60,7 +60,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
               |> Map.get(:body)
               |> Map.get(:contents)
               |> Enum.each(fn element ->
-                ExAws.S3.delete_object("justrunit-dev", Map.get(element, :key))
+                ExAws.S3.delete_object("justrunit", Map.get(element, :key))
                 |> ExAws.request()
               end)
 
