@@ -74,6 +74,12 @@ to the United States Bureau of Labor Statistics' consumer price
 index for all urban consumers, U.S. city average, for all items,
 not seasonally adjusted, with 1982â€“1984=100 reference base.
 
+## Free Trial
+
+Use to evaluate whether the software suits a particular
+application for less than 32 consecutive calendar days, on
+behalf of you or your company, is use for a permitted purpose.
+
 ## Fair Use
 
 You may have "fair use" rights for the software under the
