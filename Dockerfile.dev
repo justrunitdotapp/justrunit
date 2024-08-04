@@ -42,8 +42,5 @@ RUN npm install
 # Return to the app directory
 WORKDIR /app
 
-# Expose port 4000 (default for Phoenix)
-EXPOSE 4000
-
 # Start Phoenix server
 CMD ["mix", "phx.server"]
