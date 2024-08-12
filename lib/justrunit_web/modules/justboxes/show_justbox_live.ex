@@ -74,7 +74,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         socket = socket |> assign(s3_keys: updated_keys)
         {:noreply, socket}
 
-      {:error, _reason} ->
+      {:error, reason} ->
         socket = socket |> put_flash(:error, "Failed to create a file")
         {:noreply, socket}
     end
@@ -143,15 +143,18 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     else
       {:error, :user_is_nil} ->
         socket = socket |> assign(error: "User not found")
-        {:noreply, socket}
+        {"Failed to fetch", []}
 
       {:error, :justbox_is_nil} ->
         socket = socket |> assign(error: "Justbox not found")
-        {:noreply, socket}
+        {"Failed to fetch", []}
 
       {:error, :failed_to_fetch_from_s3} ->
-        socket = socket |> assign(error: "Failed to fetch justbox.")
-        {:noreply, socket}
+        socket = 
+          socket 
+          |> assign(error: "Failed to fetch justbox.")
+
+        {"Failed to fetch", []}
     end
   end
 
@@ -191,7 +194,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     case res do
     {:ok, justboxes} ->
       {:ok, justboxes}
-    {:error, _reason} ->
+    {:error, reason} ->
       {:error, :failed_to_fetch_from_s3}
     end
   end
