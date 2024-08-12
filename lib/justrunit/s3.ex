@@ -4,9 +4,9 @@ defmodule Justrunit.S3 do
 
 
   def new_req(options \\ []) when is_list(options) do
-  access_key = System.fetch_env!("MINIO_ACCESS_KEY")
-  secret_access_key = System.fetch_env!("MINIO_SECRET_KEY")
-  endpoint_url = System.fetch_env!("MINIO_URL")
+    access_key = System.fetch_env!("MINIO_ACCESS_KEY")
+    secret_access_key = System.fetch_env!("MINIO_SECRET_KEY")
+    endpoint_url = System.fetch_env!("MINIO_URL")
     Req.new(
       base_url: "#{endpoint_url}/justrunit",
       aws_sigv4: [service: :s3, access_key_id: access_key, secret_access_key: secret_access_key],
@@ -55,7 +55,7 @@ defmodule Justrunit.S3 do
   def list_objects(prefix) do
     req = new_req()
     
-    case Req.get!(req, url: "?prefix=#{prefix}") do
+    case Req.get!(req, params: [prefix: prefix]) do
       %Req.Response{status: 200, body: body} -> {:ok, body}
       response -> {:error, response}
     end
