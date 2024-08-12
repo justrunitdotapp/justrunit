@@ -65,14 +65,12 @@ defmodule Justrunit.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:flop, "~> 0.25"},
-      {:ex_aws, "~> 2.0"},
-      {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.20"},
-      {:waffle, "~> 1.0"},
       {:sweet_xml, "~> 0.7"},
       {:slugify, "~> 1.0"},
       {:live_svelte, "~> 0.13.2"},
-      {:stripity_stripe, "~> 3.0"}
+      {:req, "~> 0.5.0"},
+      {:req_s3, "~> 0.2.0"}
     ]
   end
 

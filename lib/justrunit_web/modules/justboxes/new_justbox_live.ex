@@ -2,6 +2,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
   use JustrunitWeb, :live_view
   import JustrunitWeb.CoreComponents, only: [button: 1, input: 1, icon: 1]
   import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
+  alias Justrunit.S3
 
   def render(assigns) do
     ~H"""
@@ -82,7 +83,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
       socket
       |> assign(form: form)
       |> assign(already_exists: false)
-      |> assign(uploaded_files: [])
+      |> assign(uploaded_files: []) 
       |> allow_upload(:project, accept: :any, max_entries: 500)
 
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
@@ -117,16 +118,11 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
            ),
          results <-
            consume_uploaded_entries(socket, :project, fn %{path: path}, entry ->
-             ExAws.S3.put_object(
-               "justrunit",
-               "#{params["s3_key"]}/#{entry.client_name}",
-               File.read!(path)
-             )
-             |> ExAws.request()
+              S3.put_object("#{params["s3_key"]}/#{entry.client_name}", File.read!(path))
            end),
          {:ok, _} <-
            Enum.find_value(results, fn
-             %{status_code: 200} -> {:ok, :success}
+             :created -> {:ok, :success}
              {:error, reason} -> {:error, reason}
            end),
          {:ok, _} <- Justbox.changeset(%Justbox{}, params) |> Repo.insert() do

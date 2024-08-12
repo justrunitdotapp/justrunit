@@ -20,15 +20,6 @@ if System.get_env("PHX_SERVER") do
   config :justrunit, JustrunitWeb.Endpoint, server: true
 end
 
-config :ex_aws,
-  access_key_id: System.get_env("MINIO_ACCESS_KEY"),
-  secret_access_key: System.get_env("MINIO_SECRET_KEY")
-
-config :ex_aws, :s3,
-  scheme: "http://",
-  host: "minio",
-  port: 9000
-
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

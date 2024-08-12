@@ -12,17 +12,18 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         </p>
       </div>
     <% else %>
-      <!-- <.svelte
+       <.svelte
         name="Jeditor"
         props={%{s3_keys: @s3_keys, justbox_name: @justbox_name, value: @file}}
         socket={@socket}
-      /> -->
+      />
     <% end %>
     """
   end
 
   import Ecto.Query
   alias Justrunit.Repo
+  alias Justrunit.S3
 
   def mount(_params, _session, socket) do
     socket = socket |> assign(error: false) |> assign(file: "")
@@ -64,17 +65,12 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("new_file", %{"handle" => handle, "file_s3_key" => file_s3_key}, socket) do
-    {:ok, user} = get_user_by_handle(handle)
+    {:ok, justbox_owner} = get_user_by_handle(handle)
 
-    ExAws.S3.put_object(
-      "justrunit",
-      "#{user.id}/#{socket.assigns.justbox_name}/123123",
-      ""
-    )
-    |> ExAws.request()
+    S3.put_object("#{justbox_owner.id}/#{socket.assigns.justbox_name}/#{file_s3_key}", "some_content123")
     |> case do
-      {:ok, file} ->
-        updated_keys = [file | socket.assigns.s3_keys]
+      {:ok, :created} ->
+        updated_keys = [file_s3_key | socket.assigns.s3_keys]
         socket = socket |> assign(s3_keys: updated_keys)
         {:noreply, socket}
 
@@ -85,17 +81,15 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("update_file", %{"s3_key" => s3_key, "content" => content}, socket) do
-    ExAws.S3.put_object(
-      "justrunit",
+    S3.put_object(
       "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}",
       content
     )
-    |> ExAws.request()
     |> case do
-      {:ok, %{status_code: 200}} ->
+      {:ok, _} ->
         {:noreply, socket}
 
-      {:error, error} ->
+      {:error, _error} ->
         socket =
           socket
           |> put_flash(:error, "Failed to save")
@@ -105,16 +99,13 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("new_folder", %{"handle" => handle}, socket) do
-    {:ok, user} = get_user_by_handle(handle)
-
-    ExAws.S3.put_object(
+    S3.put_object(
       "justrunit",
-      "#{user.id}/#{socket.assigns.justbox_name}/folder3/",
+      "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/folder3/",
       ""
     )
-    |> ExAws.request()
     |> case do
-      {:ok, folder} ->
+      {:ok, _} ->
         {:noreply, socket}
 
       {:error, _reason} ->
@@ -124,20 +115,14 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("fetch_file", %{"s3_key" => s3_key}, socket) do
-    res =
-      ExAws.S3.get_object(
-        "justrunit",
-        "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}"
-      )
-      |> ExAws.request()
+    res = S3.read_object("#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}")
 
     case res do
-      {:ok, file} ->
-        socket = socket |> assign(file: file.body)
+      {:ok, content} ->
+        socket = socket |> assign(file: content)
         {:noreply, socket}
 
-      {:error, reason} ->
-        IO.inspect(reason)
+      {:error, _reason} ->
         socket = socket |> put_flash(:error, "Failed to fetch a file")
         {:noreply, socket}
     end
@@ -201,13 +186,12 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   defp list_s3_objects(s3_key) do
-    justboxes =
-      ExAws.S3.list_objects("justrunit", prefix: s3_key)
-      |> ExAws.request()
+    res = S3.list_objects(s3_key)
 
-    if justboxes do
+    case res do
+    {:ok, justboxes} ->
       {:ok, justboxes}
-    else
+    {:error, _reason} ->
       {:error, :failed_to_fetch_from_s3}
     end
   end
