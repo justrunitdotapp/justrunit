@@ -131,7 +131,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   def load_justbox(user_handle, justbox_slug, socket) do
     with {:ok, user} <- get_user_by_handle(user_handle),
          {:ok, justbox} <- get_justbox_by_slug(user.id, justbox_slug),
-         {:ok, {:ok, justboxes}} <- list_s3_objects(justbox.s3_key) do
+         {:ok, justboxes} <- list_s3_objects(justbox.s3_key) do
       s3_keys =
         justboxes
         |> Map.get(:body)

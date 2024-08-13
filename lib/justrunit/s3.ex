@@ -2,7 +2,6 @@ defmodule Justrunit.S3 do
   import Req
   import ReqS3
 
-
   def new_req(options \\ []) when is_list(options) do
     access_key = System.fetch_env!("MINIO_ACCESS_KEY")
     secret_access_key = System.fetch_env!("MINIO_SECRET_KEY")
@@ -13,7 +12,6 @@ defmodule Justrunit.S3 do
       retry: :transient
     )
     |> Req.merge(options)
-    |> ReqS3.attach()
   end
 
   def put_object(key, content, opts \\ []) do
@@ -53,7 +51,7 @@ defmodule Justrunit.S3 do
   end
 
   def list_objects(prefix) do
-    req = new_req()
+    req = new_req() |> ReqS3.attach() 
     
     case Req.get!(req, params: [prefix: prefix]) do
       %Req.Response{status: 200, body: body} -> {:ok, body}
