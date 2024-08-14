@@ -3,14 +3,11 @@ defmodule Justrunit.S3 do
   import ReqS3
 
   def new_req(options \\ []) when is_list(options) do
-    access_key = System.fetch_env!("MINIO_ACCESS_KEY")
-    secret_access_key = System.fetch_env!("MINIO_SECRET_KEY")
-    endpoint_url = System.fetch_env!("MINIO_URL")
     Req.new(
-      base_url: "#{endpoint_url}/justrunit",
-      aws_sigv4: [service: :s3, access_key_id: access_key, secret_access_key: secret_access_key],
+      base_url: "s3://justrunit",
       retry: :transient
     )
+    |> ReqS3.attach()
     |> Req.merge(options)
   end
 
@@ -20,11 +17,15 @@ defmodule Justrunit.S3 do
       {:error, :already_exists}
     else
       req = new_req()
-      
+
+      full_url = "#{req.options[:base_url]}/#{key}"
+      IO.puts("Debug: Request URL: #{full_url}")
+
       case Req.put!(req, url: key, body: content) do
         %Req.Response{status: status} when status in 200..299 -> 
           {:ok, :created}
         response -> 
+          IO.inspect(response)
           {:error, response}
       end
     end
@@ -51,8 +52,8 @@ defmodule Justrunit.S3 do
   end
 
   def list_objects(prefix) do
-    req = new_req() |> ReqS3.attach() 
-    
+    req = new_req()
+
     case Req.get!(req, params: [prefix: prefix]) do
       %Req.Response{status: 200, body: body} -> {:ok, body}
       response -> {:error, response}

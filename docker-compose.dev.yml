@@ -12,9 +12,9 @@ services:
       - PHX_HOST=localhost
       - SECRET_KEY_BASE=DElG+3akCkNp+QmIx3kmvmjXMUni6zLZU5n9B9sF++u+4J+EfiOsxYGpzYqkyrh+
       - DATABASE_URL=ecto://postgres:postgres@pg/justrunit
-      - MINIO_URL=http://minio:9000
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
+      - AWS_ENDPOINT_URL_S3=s3://minio:9000
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
     volumes:
       - .:/app
       - /app/deps

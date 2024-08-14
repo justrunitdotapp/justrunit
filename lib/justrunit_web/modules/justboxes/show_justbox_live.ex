@@ -133,10 +133,8 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
          {:ok, justbox} <- get_justbox_by_slug(user.id, justbox_slug),
          {:ok, justboxes} <- list_s3_objects(justbox.s3_key) do
       s3_keys =
-        justboxes
-        |> Map.get(:body)
-        |> Map.get(:contents)
-        |> Enum.map(fn jb -> jb.key end)
+        justboxes["ListBucketResult"]["Contents"]
+        |> Enum.map(fn jb -> jb["Key"] end)
         |> Enum.map(&(String.split(&1, "/") |> Enum.drop(2) |> Enum.join("/")))
 
       {justbox.name, s3_keys}
@@ -188,6 +186,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     end
   end
 
+  import ReqS3
   defp list_s3_objects(s3_key) do
     res = S3.list_objects(s3_key)
 
