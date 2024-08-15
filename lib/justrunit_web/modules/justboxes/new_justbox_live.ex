@@ -83,7 +83,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
       socket
       |> assign(form: form)
       |> assign(already_exists: false)
-      |> assign(uploaded_files: []) 
+      |> assign(uploaded_files: [])
       |> allow_upload(:project, accept: :any, max_entries: 500)
 
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
@@ -118,7 +118,7 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
            ),
          results <-
            consume_uploaded_entries(socket, :project, fn %{path: path}, entry ->
-              S3.put_object("#{params["s3_key"]}/#{entry.client_name}", File.read!(path))
+             S3.put_object("#{params["s3_key"]}/#{entry.client_name}", File.read!(path))
            end),
          {:ok, _} <-
            Enum.find_value(results, fn

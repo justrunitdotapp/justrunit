@@ -3,27 +3,48 @@ defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
 
   def render(assigns) do
     ~H"""
-    <div>
-      <header class="flex flex-col items-center">
+    <section class="flex justify-around mt-24">
+      <header class="flex flex-col">
         <h1 class="mt-24 text-4xl font-bold">Simple tool for sharing code</h1>
         <h2 class="py-4 text-xl">Easy interface, faster development</h2>
         <a
           href="/sign-up"
-          class="px-4 py-2 font-bold text-white bg-blue-500 rounded transition hover:bg-blue-700"
+          class="px-4 py-2 mx-auto mt-8 font-bold text-white bg-blue-500 rounded transition hover:bg-blue-700"
         >
           Just Try It
         </a>
-        <p class="text-sm text-gray-700">No credit card required</p>
+        <p class="mx-auto text-sm text-gray-700">No credit card required</p>
       </header>
-      <div class="mx-auto mt-72 max-w-7xl">
-        <h2 class="text-3xl font-medium text-center">Interactive Playground</h2>
-        <!-- <.svelte
+      <div>
+        <iframe
+          width="720"
+          height="480"
+          class="mx-auto"
+          src="https://www.youtube.com/embed/VIDEO_ID"
+          frameborder="0"
+          allowfullscreen
+        >
+        </iframe>
+      </div>
+    </section>
+
+    <section class="mx-auto mt-24 max-w-7xl">
+      <h2 class="text-3xl font-medium text-center">Interactive Playground</h2>
+      <!-- <.svelte
           name="Jeditor"
           props={%{s3_keys: @s3_keys, justbox_name: @justbox_name}}
           socket={@socket}
         /> -->
-      </div>
-    </div>
+    </section>
+    <section class="mx-auto max-w-5xl text-blue-500">
+      <h2 class="pb-2 mt-16 mb-4 text-4xl font-bold text-center">
+        Simple, predictable pricing.
+      </h2>
+      <p class="mb-6 text-xl text-center text-gray-700">
+        No additional fees, no auto-renewals on default, simple cancellation.
+      </p>
+      <.svelte name="Pricing" props={%{}} socket={@socket} />
+    </section>
     """
   end
 

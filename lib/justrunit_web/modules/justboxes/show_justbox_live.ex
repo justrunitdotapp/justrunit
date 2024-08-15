@@ -12,7 +12,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         </p>
       </div>
     <% else %>
-       <.svelte
+      <.svelte
         name="Jeditor"
         props={%{s3_keys: @s3_keys, justbox_name: @justbox_name, value: @file}}
         socket={@socket}
@@ -67,7 +67,10 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   def handle_event("new_file", %{"handle" => handle, "file_s3_key" => file_s3_key}, socket) do
     {:ok, justbox_owner} = get_user_by_handle(handle)
 
-    S3.put_object("#{justbox_owner.id}/#{socket.assigns.justbox_name}/#{file_s3_key}", "some_content123")
+    S3.put_object(
+      "#{justbox_owner.id}/#{socket.assigns.justbox_name}/#{file_s3_key}",
+      "some_content123"
+    )
     |> case do
       {:ok, :created} ->
         updated_keys = [file_s3_key | socket.assigns.s3_keys]
@@ -115,7 +118,10 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("fetch_file", %{"s3_key" => s3_key}, socket) do
-    res = S3.read_object("#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}")
+    res =
+      S3.read_object(
+        "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}"
+      )
 
     case res do
       {:ok, content} ->
@@ -148,8 +154,8 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
         {"Failed to fetch", []}
 
       {:error, :failed_to_fetch_from_s3} ->
-        socket = 
-          socket 
+        socket =
+          socket
           |> assign(error: "Failed to fetch justbox.")
 
         {"Failed to fetch", []}
@@ -164,6 +170,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     case user do
       nil ->
         {:error, :user_is_nil}
+
       user ->
         {:ok, user}
 
@@ -187,14 +194,16 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   import ReqS3
+
   defp list_s3_objects(s3_key) do
     res = S3.list_objects(s3_key)
 
     case res do
-    {:ok, justboxes} ->
-      {:ok, justboxes}
-    {:error, reason} ->
-      {:error, :failed_to_fetch_from_s3}
+      {:ok, justboxes} ->
+        {:ok, justboxes}
+
+      {:error, reason} ->
+        {:error, :failed_to_fetch_from_s3}
     end
   end
 end

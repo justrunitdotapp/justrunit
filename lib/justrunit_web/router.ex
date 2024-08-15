@@ -11,6 +11,7 @@ defmodule JustrunitWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+
     plug Plug.Static,
       at: "/",
       from: :justrunit,
@@ -26,7 +27,6 @@ defmodule JustrunitWeb.Router do
     pipe_through :browser
 
     live "/", Welcome.WelcomeLive, :welcome
-    live "pricing", Pricing.PricingLive, :pricing
   end
 
   scope "/", JustrunitWeb.Modules do
