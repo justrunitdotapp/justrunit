@@ -8,7 +8,7 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
       for={@form}
       phx-submit="save"
       phx-change="validate"
-      class="flex flex-col max-w-sm lg:max-w-2xl mx-auto my-12 gap-8"
+      class="flex flex-col gap-8 mx-auto my-12 max-w-sm lg:max-w-2xl"
     >
       <.breadcrumb items={[%{label: "justboxes", navigate: "/justboxes/"}, %{text: "Settings"}]} />
       <h1 class="text-2xl font-bold text-center">Account details</h1>
@@ -17,32 +17,31 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
       <.button type="submit" class="mt-4 lg:w-24 lg:ml-auto">Update</.button>
       <section class="flex flex-col gap-8">
         <h2 class="text-xl font-bold text-center">Rented resources</h2>
-        <div>
-          <h3 class="text-lg font-bold">Usage</h3>
-          <ul class="list-none space-y-2 mb-6">
-            <li class="text-gray-700">
-              vCPUs: 0% / 200%
-              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 2%"></div>
-              </div>
-            </li>
-            <li class="text-gray-700">
-              Storage: 0 / 0.2 GB
-              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 2%"></div>
-              </div>
-            </li>
-          </ul>
+        <div class="flex">
+          <div class="flex flex-col items-center w-1/4 text-center">
+            <label class="text-sm text-zinc-500">Computing Hours</label>
+            <p class="text-2xl font-bold">40 / 50</p>
+          </div>
+          <div class="w-px bg-gray-300"></div>
+          <div class="flex flex-col items-center w-1/4 text-center">
+            <label class="text-sm text-zinc-500">vCPUs</label>
+            <p class="text-2xl font-bold">4</p>
+          </div>
+          <div class="w-px bg-gray-300"></div>
+          <div class="flex flex-col items-center w-1/4 text-center">
+            <label class="text-sm text-zinc-500">RAM</label>
+            <p class="text-2xl font-bold">2 GBs</p>
+          </div>
+          <div class="w-px bg-gray-300"></div>
+          <div class="flex flex-col items-center w-1/4 text-center">
+            <label class="text-sm text-zinc-500">Storage</label>
+            <p class="text-2xl font-bold">50 GBs</p>
+          </div>
         </div>
-        <div>
-          <.input field={@form[:storage]} label="Storage (GB)" type="number" class="w-full" />
-          <p class="text-gray-7000 text-sm">$0.00 per month</p>
-        </div>
-        <div>
-          <.input field={@form[:vcpus]} label="vCPUs" type="number" class="w-full" />
-          <p class="text-gray-7000 text-sm">$0.00 per month</p>
-        </div>
-        <p class="text-gray-700 font-bold">Monthly Cost: $0.00</p>
+        <p class="mx-auto">Plan: <span class="font-bold">Paid</span></p>
+        <.link class="mx-auto text-blue-500 hover:underline" href={~p"/settings/change-allowance"}>
+          Change allowance
+        </.link>
         <.input type="checkbox" field={@form[:auto_renew]} label="Auto-renew" class="w-full" />
         <.button type="submit" class="mt-4 lg:w-24 lg:ml-auto">Update</.button>
       </section>
@@ -61,7 +60,7 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
       socket
       |> assign(form: form)
 
-    {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
+    {:ok, socket}
   end
 
   def handle_event("validate", %{"user" => user_params}, socket) do

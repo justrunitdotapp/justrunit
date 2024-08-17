@@ -1,10 +1,10 @@
 <script>
   import { onMount } from "svelte";
 
-  let recommendedValue = 25;
-  let vCPUs = 2;
-  let ram = 4;
-  let storage = 100;
+  export let recommendedValue;
+  export let vCPUs;
+  export let ram;
+  export let storage;
 
   function updateRecommended() {
     vCPUs = Math.round(recommendedValue / 25) + 1;
@@ -128,7 +128,7 @@
       class="p-2 mt-auto w-full h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-md"
     >
       <p class="font-semibold text-white">Price</p>
-      <p class="text-5xl font-black text-white">25$</p>
+      <p class="text-5xl font-black text-white">7$</p>
     </div>
   </div>
   <button

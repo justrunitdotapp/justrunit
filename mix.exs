@@ -70,7 +70,8 @@ defmodule Justrunit.MixProject do
       {:slugify, "~> 1.0"},
       {:live_svelte, "~> 0.13.2"},
       {:req, "~> 0.5.0"},
-      {:req_s3, github: "wojtekmach/req_s3"} # TODO: replace it with regular version after the patched version in released
+      # TODO: replace it with regular version after the patched version in released
+      {:req_s3, github: "wojtekmach/req_s3"}
     ]
   end
 

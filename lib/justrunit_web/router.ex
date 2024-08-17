@@ -74,6 +74,7 @@ defmodule JustrunitWeb.Router do
     live_session :require_authenticated_user,
       on_mount: [{JustrunitWeb.UserAuth, :ensure_authenticated}] do
       live "/settings", Accounts.SettingsLive, :settings
+      live "/settings/change-allowance", Accounts.Plans.ChangeAllowanceLive, :change_allowance
       live "/new-justbox", Justboxes.NewJustboxLive, :new_justbox
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/justboxes/", Justboxes.JustboxesListLive, :justboxes_list

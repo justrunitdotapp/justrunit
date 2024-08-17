@@ -50,6 +50,7 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
 
   alias JustrunitWeb.Modules.Accounts.User
   alias JustrunitWeb.Modules.Accounts
+  alias JustrunitWeb.Modules.Accounts.Plans.UserPlan
   alias Justrunit.Repo
 
   def mount(_params, _session, socket) do
@@ -85,6 +86,12 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
             user,
             &url(~p"/users/confirm/#{&1}")
           )
+
+        UserPlan.changeset(%UserPlan{}, %{
+          user_id: user.id,
+          plan_id: 0
+        })
+        |> Repo.insert!()
 
         changeset = Accounts.change_user_registration(user)
         {:noreply, socket |> assign(trigger_submit: true) |> assign_form(changeset)}

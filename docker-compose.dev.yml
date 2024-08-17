@@ -11,7 +11,7 @@ services:
       - MIX_ENV=dev
       - PHX_HOST=localhost
       - SECRET_KEY_BASE=DElG+3akCkNp+QmIx3kmvmjXMUni6zLZU5n9B9sF++u+4J+EfiOsxYGpzYqkyrh+
-      - DATABASE_URL=ecto://postgres:postgres@pg/justrunit
+      - DATABASE_URL=ecto://postgres:postgres@pg/justrunit_dev
       - AWS_ENDPOINT_URL_S3=http://minio:9000
       - AWS_ACCESS_KEY_ID=minioadmin
       - AWS_SECRET_ACCESS_KEY=minioadmin

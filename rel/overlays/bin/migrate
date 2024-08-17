@@ -3,3 +3,15 @@ set -eu
 
 cd -P -- "$(dirname -- "$0")"
 exec ./justrunit eval Justrunit.Release.migrate
+
+# Check if the last command was successful (exit status 0)
+if [ $? -eq 0 ]; then
+  echo "Migrations completed successfully."
+  
+  # Only run seeds.exs if migrations were successful
+  echo "Running seeds.exs..."
+  exec mix run priv/repo/seeds.exs
+else
+  echo "Migrations failed. Exiting."
+  exit 1
+fi
