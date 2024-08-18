@@ -51,6 +51,7 @@ defmodule JustrunitWeb.Modules.Accounts.Plans.Plan do
     end
   end
 
+
   @doc """
   Checks if a plan is paid based on resources allowance
   """

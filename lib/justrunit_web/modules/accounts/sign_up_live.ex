@@ -89,7 +89,7 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
 
         UserPlan.changeset(%UserPlan{}, %{
           user_id: user.id,
-          plan_id: 0
+          plan_id: 1
         })
         |> Repo.insert!()
 

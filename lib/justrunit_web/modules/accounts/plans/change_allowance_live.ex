@@ -28,9 +28,8 @@ defmodule JustrunitWeb.Modules.Accounts.Plans.ChangeAllowanceLive do
   alias Justrunit.Repo
 
   def mount(_, _session, socket) do
-    user =
-      Repo.get_by(User, id: socket.assigns.current_user.id)
-      |> Repo.preload([:user_plan, :user_plan.plan()])
+    user = Repo.get_by(User, id: socket.assigns.current_user.id)
+       |> Repo.preload([user_plan: :plan])
 
     form = to_form(Plan.changeset(user.user_plan.plan, %{}))
     socket = socket |> assign(form: form)
@@ -41,7 +40,7 @@ defmodule JustrunitWeb.Modules.Accounts.Plans.ChangeAllowanceLive do
   def handle_event("save", %{"plan" => plan_params}, socket) do
     user =
       Repo.get_by(User, id: socket.assigns.current_user.id)
-      |> Repo.preload([:user_plan, :user_plan.plan()])
+      |> Repo.preload([user_plan: :plan])
 
     changeset = Plan.update(user.user_plan.plan, plan_params)
 
