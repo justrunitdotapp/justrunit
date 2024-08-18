@@ -12,6 +12,8 @@ defmodule Justrunit.Repo.Migrations.CreatePlans do
       timestamps(type: :utc_datetime)
     end
 
+    insert_into("plans", {vcpus: 1, ram: 1, storage: 1, computing_seconds: 1, type: :free})
+
     create constraint(:plans, :positive_vcpus, check: "vcpus > 0")
     create constraint(:plans, :positive_ram, check: "ram > 0")
     create constraint(:plans, :positive_storage, check: "storage > 0")

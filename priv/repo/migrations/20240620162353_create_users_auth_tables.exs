@@ -5,6 +5,8 @@ defmodule Justrunit.Repo.Migrations.CreateUsersAuthTables do
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
 
     create table(:users) do
+      add :name, :string, null: false
+      add :handle, :string, null: false, unique: true
       add :email, :citext, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :utc_datetime
@@ -12,6 +14,8 @@ defmodule Justrunit.Repo.Migrations.CreateUsersAuthTables do
       timestamps(type: :utc_datetime)
     end
 
+    create(unique_index(:users, [:handle]))
+    create(index(:justboxes, [:user_id]))
     create unique_index(:users, [:email])
 
     create table(:users_tokens) do
