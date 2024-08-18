@@ -15,7 +15,6 @@ defmodule Justrunit.Repo.Migrations.CreateUsersAuthTables do
     end
 
     create(unique_index(:users, [:handle]))
-    create(index(:justboxes, [:user_id]))
     create unique_index(:users, [:email])
 
     create table(:users_tokens) do

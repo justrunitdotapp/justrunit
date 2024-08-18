@@ -9,8 +9,9 @@ defmodule Justrunit.Repo.Migrations.AddJustboxesTable do
       add :user_id, references(:users, on_delete: :delete_all), null: false
       add :s3_key, :string, null: false
       timestamps()
-    end
 
-    create unique_index(:justboxes, [s3_key])
+    end
+    create unique_index(:justboxes, [:s3_key])
+    create(index(:justboxes, [:user_id]))
   end
 end
