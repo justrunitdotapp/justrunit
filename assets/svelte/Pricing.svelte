@@ -147,7 +147,7 @@
     height: 25px;
     background: transparent;
     outline: none;
-    opacity: 0.7;
+    opacity: 0.8;
     transition: opacity 0.2s;
   }
 
