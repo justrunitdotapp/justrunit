@@ -43,6 +43,10 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
+config :error_tracker,
+  repo: Justrunit.Repo,
+  otp_app: :justrunit
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

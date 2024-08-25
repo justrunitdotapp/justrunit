@@ -1,5 +1,6 @@
 defmodule JustrunitWeb.Router do
   use JustrunitWeb, :router
+  use ErrorTracker.Web, :router
 
   import JustrunitWeb.UserAuth
 
@@ -85,6 +86,7 @@ defmodule JustrunitWeb.Router do
   scope "/", JustrunitWeb.Modules do
     pipe_through :browser
 
+    error_tracker_dashboard "/errors"
     live "/:handle/:justbox_slug", Justboxes.ShowJustboxLive, :show_justbox
   end
 end
