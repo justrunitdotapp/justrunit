@@ -40,6 +40,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
   end
 
+  @warning_on_import "TODO: delete_justbox handle event content is not yet updated after going from ExAws to req"
   def handle_event("delete_justbox", %{"name" => name}, socket) do
     justbox = Justrunit.Repo.get_by(Justbox, name: name)
 
@@ -47,8 +48,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
       case Justrunit.Repo.delete(justbox) do
         {:ok, _} ->
           res =
-            ExAws.S3.list_objects("justrunit", prefix: justbox.s3_key)
-            |> ExAws.request()
+            S3.list_objects_by_prefix(justbox.s3_key)
 
           case res do
             {:ok, %{body: %{"Contents" => []}}} ->
@@ -60,8 +60,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
               |> Map.get(:body)
               |> Map.get(:contents)
               |> Enum.each(fn element ->
-                ExAws.S3.delete_object("justrunit", Map.get(element, :key))
-                |> ExAws.request()
+                S3.delete_object(Map.get(element, :key))
               end)
 
               {:noreply, push_patch(socket, to: ~p"/justboxes")}

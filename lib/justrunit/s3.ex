@@ -51,7 +51,7 @@ defmodule Justrunit.S3 do
     end
   end
 
-  def list_objects(prefix) do
+  def list_objects_by_prefix(prefix) do
     req = new_req()
 
     case Req.get!(req, params: [prefix: prefix]) do

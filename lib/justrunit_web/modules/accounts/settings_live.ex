@@ -2,6 +2,8 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
   use JustrunitWeb, :live_view
   import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
 
+  @seconds_in_hour 3600
+
   def render(assigns) do
     ~H"""
     <.form
@@ -19,26 +21,29 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
         <h2 class="text-xl font-bold text-center">Rented resources</h2>
         <div class="flex">
           <div class="flex flex-col items-center w-1/4 text-center">
-            <label class="text-sm text-zinc-500">Computing Hours</label>
-            <p class="text-2xl font-bold">40 / 50</p>
+            <label class="text-sm text-zinc-500">Computing <%= @time_unit %></label>
+            <p class="text-2xl font-bold"><%= @computing_time %> / <%= @max_computing_time %></p>
+            <p class="text-xs text-zinc-500">
+              <%= @computing_time_seconds %> / <%= @max_computing_time_seconds %> sec
+            </p>
           </div>
           <div class="w-px bg-gray-300"></div>
           <div class="flex flex-col items-center w-1/4 text-center">
             <label class="text-sm text-zinc-500">vCPUs</label>
-            <p class="text-2xl font-bold">4</p>
+            <p class="text-2xl font-bold"><%= @vcpus %></p>
           </div>
           <div class="w-px bg-gray-300"></div>
           <div class="flex flex-col items-center w-1/4 text-center">
             <label class="text-sm text-zinc-500">RAM</label>
-            <p class="text-2xl font-bold">2 GBs</p>
+            <p class="text-2xl font-bold"><%= @ram %> GBs</p>
           </div>
           <div class="w-px bg-gray-300"></div>
           <div class="flex flex-col items-center w-1/4 text-center">
             <label class="text-sm text-zinc-500">Storage</label>
-            <p class="text-2xl font-bold">50 GBs</p>
+            <p class="text-2xl font-bold"><%= @storage %> GBs</p>
           </div>
         </div>
-        <p class="mx-auto">Plan: <span class="font-bold">Paid</span></p>
+        <p class="mx-auto">Plan: <span class="font-bold"><%= @plan_type %></span></p>
         <.link class="mx-auto text-blue-500 hover:underline" href={~p"/settings/change-allowance"}>
           Change allowance
         </.link>
@@ -53,15 +58,43 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
   alias Justrunit.Repo
 
   def mount(_, _session, socket) do
-    user = Repo.get!(User, socket.assigns.current_user.id)
+    user =
+      Repo.get_by(User, id: socket.assigns.current_user.id)
+      |> Repo.preload(user_plan: :plan)
+
     form = to_form(User.settings_changeset(user, %{}))
 
     socket =
       socket
       |> assign(form: form)
+      |> assign(vcpus: user.user_plan.plan.vcpus)
+      |> assign(ram: user.user_plan.plan.ram)
+      |> assign(storage: user.user_plan.plan.storage)
+      |> assign(plan_type: user.user_plan.plan.type)
+      |> assign(
+        computing_time:
+          calculate_computing_time(user.user_plan.plan.computing_seconds |> Decimal.to_integer())
+      )
+      |> assign(computing_time_seconds: 1)
+      |> assign(
+        max_computing_time_seconds: user.user_plan.plan.computing_seconds |> Decimal.to_integer()
+      )
+      |> assign(
+        time_unit: time_unit(user.user_plan.plan.computing_seconds |> Decimal.to_integer())
+      )
+      |> assign(
+        max_computing_time:
+          div(user.user_plan.plan.computing_seconds |> Decimal.to_integer(), 3600)
+      )
 
     {:ok, socket}
   end
+
+  defp calculate_computing_time(seconds) when seconds < @seconds_in_hour, do: "<1"
+  defp calculate_computing_time(seconds) when seconds > @seconds_in_hour, do: div(seconds, 3600)
+
+  defp time_unit(seconds) when seconds >= @seconds_in_hour, do: "Hours"
+  defp time_unit(seconds) when seconds < @seconds_in_hour, do: "Minutes"
 
   def handle_event("validate", %{"user" => user_params}, socket) do
     user = Repo.get!(User, socket.assigns.current_user.id)

@@ -17,6 +17,9 @@ defmodule Justrunit.Repo.Migrations.CreatePlans do
     create constraint(:plans, :positive_ram, check: "ram > 0")
     create constraint(:plans, :positive_storage, check: "storage > 0")
     create constraint(:plans, :positive_computing_seconds, check: "computing_seconds > 0")
+    create unique_index(:plans, [:vcpus, :ram, :storage, :computing_seconds, :type])
+
+    # type needs to be in unique_index because some a paid plan might have the same values as some other free one
 
     # Create user_plan table
     create table(:user_plan) do
@@ -25,19 +28,13 @@ defmodule Justrunit.Repo.Migrations.CreatePlans do
       timestamps(type: :utc_datetime)
     end
 
-    create index(:user_plan, [:user_id])
     create index(:user_plan, [:plan_id])
-    create unique_index(:user_plan, [:user_id, :plan_id])
-
 
     # Insert initial data
     execute "INSERT INTO plans (vcpus, ram, storage, computing_seconds, type, inserted_at, updated_at) VALUES (1, 1, 1, 1, 'free', NOW(), NOW())"
-  end
-
-  def change() do
-    # Create enum type and alter users table
+    # Create enum type and alter plans table
     execute "CREATE TYPE plan_type AS ENUM ('paid', 'free')"
-    execute "ALTER TABLE users ALTER COLUMN type TYPE plan_type USING (type::plan_type)"
+    execute "ALTER TABLE plans ALTER COLUMN type TYPE plan_type USING (type::plan_type)"
   end
 
   def down do

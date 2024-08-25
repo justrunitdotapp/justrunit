@@ -1,6 +1,7 @@
 defmodule JustrunitWeb.Modules.Accounts.Plans.Plan do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Justrunit.Repo
 
   schema "plans" do
     field :vcpus, :integer
@@ -39,34 +40,21 @@ defmodule JustrunitWeb.Modules.Accounts.Plans.Plan do
   end
 
   @doc """
-  Checks if changed plan is paid at the end
-  """
-  def update(struct \\ %__MODULE__{}, params) do
-    cs = changeset(struct, params)
-
-    if plan_is_paid?(struct) do
-      change(struct, %{type: :paid})
-    else
-      struct
-    end
-  end
-
-
-  @doc """
   Checks if a plan is paid based on resources allowance
   """
   def plan_is_paid?(new_plan) do
-    case Repo.get(Plan, 0) do
-      {:ok, plan} ->
-        Enum.all?(
-          [:vcpus, :ram, :storage, :computing_seconds],
-          fn key ->
-            new_plan.data[key] > plan.data[key]
-          end
-        )
-
-      {:error, _} ->
+    case Repo.get(JustrunitWeb.Modules.Accounts.Plans.Plan, 1) do
+      nil ->
         {:error, :failed_to_find_free_plan}
+
+      plan ->
+        new_plan_keys = Map.keys(new_plan)
+
+        if Map.take(plan, new_plan_keys) == new_plan do
+          false
+        else
+          true
+        end
     end
   end
 end
