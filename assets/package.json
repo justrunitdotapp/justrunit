@@ -21,7 +21,6 @@
     "postcss": "^8.4.39",
     "svelte-codemirror-editor": "^1.4.0",
     "svelte-hero-icons": "^5.1.0",
-    "svelte-monaco": "^0.4.0",
     "svelte-splitpanes": "^8.0.5",
     "wunderbaum": "^0.10.0"
   }
