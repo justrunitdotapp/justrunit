@@ -13,7 +13,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
       </div>
     <% else %>
       <.svelte
-        name="Jeditor"
+        name="Jeditor/Jeditor"
         props={%{s3_keys: @s3_keys, justbox_name: @justbox_name, value: @file}}
         socket={@socket}
       />
@@ -193,10 +193,8 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
     end
   end
 
-  import ReqS3
-
   defp list_s3_objects(s3_key) do
-    res = S3.list_objects(s3_key)
+    res = S3.list_objects_by_prefix(s3_key)
 
     case res do
       {:ok, justboxes} ->
