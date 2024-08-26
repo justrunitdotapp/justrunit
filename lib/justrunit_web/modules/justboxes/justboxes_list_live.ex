@@ -68,12 +68,13 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
   defp handle_s3_deletion(s3_key, socket) do
     case S3.list_objects_by_prefix(s3_key) do
       {:ok, %{"ListBucketResult" => %{"Contents" => []}}} ->
-        {:noreply,
-         socket |> put_flash(:info, "Justbox already removed.")}
+        {:noreply, socket |> put_flash(:info, "Justbox already removed.")}
 
       {:ok, %{"ListBucketResult" => %{"Contents" => contents}}} ->
         Enum.each(contents, fn %{"Key" => key} -> S3.delete_object(key) end)
-        {:noreply, socket |> put_flash(:info, "Justbox removed") |> push_patch(to: ~p"/justboxes")}
+
+        {:noreply,
+         socket |> put_flash(:info, "Justbox removed") |> push_patch(to: ~p"/justboxes")}
 
       _ ->
         {:noreply,

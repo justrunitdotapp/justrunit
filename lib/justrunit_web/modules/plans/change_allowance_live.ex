@@ -87,7 +87,7 @@ defmodule JustrunitWeb.Modules.Plans.ChangeAllowanceLive do
         planrel_or_rel(plan_params, socket.assigns.current_user.id)
         |> case do
           {:ok, _} ->
-              socket = socket |> put_flash(:info, "Allowance updated")
+            socket = socket |> put_flash(:info, "Allowance updated")
             {:noreply, socket}
 
           {:error, _} ->
