@@ -34,33 +34,33 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
   end
 
   alias JustrunitWeb.Modules.Justboxes.Justbox
+  alias Justrunit.S3
+  alias Justrunit.Repo
 
   def mount(_params, _session, socket) do
     socket = socket |> assign(show_modal: false)
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
   end
 
-  @warning_on_import "TODO: delete_justbox handle event content is not yet updated after going from ExAws to req"
-  def handle_event("delete_justbox", %{"name" => name}, socket) do
-    justbox = Justrunit.Repo.get_by(Justbox, name: name)
+  @warning_on_import "TODO: delete_justbox handle event content is not yet updated after going from ExAws to req, also don't fetch justbox just by name"
+  def handle_event("delete_justbox", %{"slug" => slug}, socket) do
+    justbox = Justrunit.Repo.get_by(Justbox, user_id: socket.assigns.current_user.id, slug: slug)
 
     if justbox do
-      case Justrunit.Repo.delete(justbox) do
+      case Repo.delete(justbox) do
         {:ok, _} ->
           res =
             S3.list_objects_by_prefix(justbox.s3_key)
 
           case res do
-            {:ok, %{body: %{"Contents" => []}}} ->
-              socket = put_flash(socket, :info, "Justbox removed successfully.")
+            {:ok, %{"ListBucketResult" => %{"Contents" => []}}} ->
+              socket = put_flash(socket, :info, "Justbox already removed.")
               {:noreply, push_patch(socket, to: ~p"/justboxes")}
 
             {:ok, contents} ->
-              contents
-              |> Map.get(:body)
-              |> Map.get(:contents)
+              contents["ListBucketResult"]["Contents"]
               |> Enum.each(fn element ->
-                S3.delete_object(Map.get(element, :key))
+                S3.delete_object(element["Key"])
               end)
 
               {:noreply, push_patch(socket, to: ~p"/justboxes")}

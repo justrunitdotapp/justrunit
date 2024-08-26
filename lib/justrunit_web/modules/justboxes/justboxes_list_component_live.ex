@@ -7,7 +7,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
 
   def justboxes_list_component(assigns) do
     ~H"""
-    <div class="flex flex-col w-full mt-4">
+    <div class="flex flex-col mt-4 w-full">
       <.justbox
         :for={{justbox, index} <- Enum.with_index(@justboxes)}
         name={justbox.name}
@@ -60,13 +60,13 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
     assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
     ~H"""
-    <div class="p-2 border-b hover:bg-neutral-300 border-gray-800 flex flex-row justify-between space-x-4 group relative">
+    <div class="flex relative flex-row justify-between p-2 space-x-4 border-b border-gray-800 hover:bg-neutral-300 group">
       <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
       <p class="text-gray-600 group-hover:hidden">Last updated <%= @last_changed %></p>
       <button
         phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
         phx-value-name={@name_slug}
-        class="hidden group-hover:block hover:underline text-red-500 font-medium"
+        class="hidden font-medium text-red-500 group-hover:block hover:underline"
       >
         Remove
       </button>
@@ -76,20 +76,20 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
         phx-click-away={JS.hide(to: "#popover-content-#{@name_slug}")}
         class="border border-zinc-300 p-4 rounded-md shadow-md bg-white absolute top-0 right-[-8px] transform translate-x-full z-1000 hidden"
       >
-        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-zinc-300">
+        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-r-8 border-b-8 border-t-transparent border-b-transparent border-r-zinc-300">
         </div>
-        <p class="font-medium text-center mb-2 text-gray-800">Are you sure?</p>
+        <p class="mb-2 font-medium text-center text-gray-800">Are you sure?</p>
         <div class="flex justify-center space-x-2">
           <button
             phx-click="delete_justbox"
-            phx-value-name={@name_slug}
-            class="bg-red-500 text-white hover:bg-red-600 px-3 py-1 rounded-md"
+            phx-value-slug={@name_slug}
+            class="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600"
           >
             Yes
           </button>
           <button
             phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
-            class="border border-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-zinc-200"
+            class="px-3 py-1 text-gray-700 rounded-md border border-gray-300 hover:bg-zinc-200"
           >
             No
           </button>
@@ -105,7 +105,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
     ~H"""
     <div
       id={"popover-#{@name_slug}"}
-      class="p-2 hover:bg-neutral-300 flex flex-row justify-between space-x-4 group relative"
+      class="flex relative flex-row justify-between p-2 space-x-4 hover:bg-neutral-300 group"
     >
       <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline">
         <%= @name %>
@@ -114,7 +114,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
       <button
         phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
         phx-value-name={@name_slug}
-        class="hidden group-hover:block hover:underline text-red-500 font-medium"
+        class="hidden font-medium text-red-500 group-hover:block hover:underline"
       >
         Remove
       </button>
@@ -124,20 +124,20 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
         phx-click-away={JS.hide(to: "#popover-content-#{@name_slug}")}
         class="border border-zinc-300 p-4 rounded-md shadow-md bg-white absolute top-0 right-[-8px] transform translate-x-full z-1000 hidden"
       >
-        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-zinc-300">
+        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-r-8 border-b-8 border-t-transparent border-b-transparent border-r-zinc-300">
         </div>
-        <p class="font-medium text-center mb-2 text-gray-800">Are you sure?</p>
+        <p class="mb-2 font-medium text-center text-gray-800">Are you sure?</p>
         <div class="flex justify-center space-x-2">
           <button
             phx-click="delete_justbox"
-            phx-value-name={@name_slug}
-            class="bg-red-500 text-white hover:bg-red-600 px-3 py-1 rounded-md"
+            phx-value-slug={@name_slug}
+            class="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600"
           >
             Yes
           </button>
           <button
             phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
-            class="border border-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-zinc-200"
+            class="px-3 py-1 text-gray-700 rounded-md border border-gray-300 hover:bg-zinc-200"
           >
             No
           </button>
