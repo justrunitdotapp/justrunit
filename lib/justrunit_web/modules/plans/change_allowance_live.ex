@@ -1,4 +1,4 @@
-defmodule JustrunitWeb.Modules.Accounts.Plans.ChangeAllowanceLive do
+defmodule JustrunitWeb.Modules.Plans.ChangeAllowanceLive do
   use JustrunitWeb, :live_view
   import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
 
@@ -28,8 +28,8 @@ defmodule JustrunitWeb.Modules.Accounts.Plans.ChangeAllowanceLive do
   end
 
   alias JustrunitWeb.Modules.Accounts.User
-  alias JustrunitWeb.Modules.Accounts.Plans.Plan
-  alias JustrunitWeb.Modules.Accounts.Plans.UserPlan
+  alias JustrunitWeb.Modules.Plans.Plan
+  alias JustrunitWeb.Modules.Plans.UserPlan
   alias Justrunit.Repo
   alias Ecto.Multi
 
@@ -87,7 +87,7 @@ defmodule JustrunitWeb.Modules.Accounts.Plans.ChangeAllowanceLive do
         planrel_or_rel(plan_params, socket.assigns.current_user.id)
         |> case do
           {:ok, _} ->
-            socket = socket |> put_flash(:info, "Allowance updated")
+              socket = socket |> put_flash(:info, "Allowance updated")
             {:noreply, socket}
 
           {:error, _} ->

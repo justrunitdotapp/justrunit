@@ -1,10 +1,10 @@
-defmodule JustrunitWeb.Modules.Accounts.Plans.UserPlan do
+defmodule JustrunitWeb.Modules.Plans.UserPlan do
   use Ecto.Schema
   import Ecto.Changeset
 
   schema "user_plan" do
     belongs_to :user, JustrunitWeb.Modules.Accounts.User
-    belongs_to :plan, JustrunitWeb.Modules.Accounts.Plans.Plan
+    belongs_to :plan, JustrunitWeb.Modules.Plans.Plan
 
     timestamps(type: :utc_datetime)
   end

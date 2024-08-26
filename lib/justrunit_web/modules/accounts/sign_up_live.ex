@@ -50,7 +50,7 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
 
   alias JustrunitWeb.Modules.Accounts.User
   alias JustrunitWeb.Modules.Accounts
-  alias JustrunitWeb.Modules.Accounts.Plans.UserPlan
+  alias JustrunitWeb.Modules.Plans.UserPlan
   alias Justrunit.Repo
 
   def mount(_params, _session, socket) do

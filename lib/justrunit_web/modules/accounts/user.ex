@@ -12,7 +12,7 @@ defmodule JustrunitWeb.Modules.Accounts.User do
     field :confirmed_at, :utc_datetime
 
     has_many :justboxes, JustrunitWeb.Modules.Justboxes.Justbox
-    has_one :user_plan, JustrunitWeb.Modules.Accounts.Plans.UserPlan
+    has_one :user_plan, JustrunitWeb.Modules.Plans.UserPlan
 
     timestamps(type: :utc_datetime)
   end

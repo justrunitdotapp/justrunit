@@ -1,4 +1,4 @@
-defmodule JustrunitWeb.Modules.Accounts.Plans.Plan do
+defmodule JustrunitWeb.Modules.Plans.Plan do
   use Ecto.Schema
   import Ecto.Changeset
   alias Justrunit.Repo
@@ -43,7 +43,7 @@ defmodule JustrunitWeb.Modules.Accounts.Plans.Plan do
   Checks if a plan is paid based on resources allowance
   """
   def plan_is_paid?(new_plan) do
-    case Repo.get(JustrunitWeb.Modules.Accounts.Plans.Plan, 1) do
+    case Repo.get(JustrunitWeb.Modules.Plans.Plan, 1) do
       nil ->
         {:error, :failed_to_find_free_plan}
 
