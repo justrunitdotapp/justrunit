@@ -86,7 +86,7 @@ defmodule JustrunitWeb.Router do
   scope "/", JustrunitWeb.Modules do
     pipe_through :browser
 
-    error_tracker_dashboard "/errors"
+    error_tracker_dashboard("/errors")
     live "/:handle/:justbox_slug", Justboxes.ShowJustboxLive, :show_justbox
   end
 end

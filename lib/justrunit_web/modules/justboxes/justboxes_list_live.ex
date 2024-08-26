@@ -42,55 +42,46 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
     {:ok, socket, layout: {JustrunitWeb.Layouts, :app}}
   end
 
-  @warning_on_import "TODO: delete_justbox handle event content is not yet updated after going from ExAws to req, also don't fetch justbox just by name"
   def handle_event("delete_justbox", %{"slug" => slug}, socket) do
-    justbox = Justrunit.Repo.get_by(Justbox, user_id: socket.assigns.current_user.id, slug: slug)
+    current_user_id = socket.assigns.current_user.id
+    justbox = Justrunit.Repo.get_by(Justbox, user_id: current_user_id, slug: slug)
 
-    if justbox do
+    if is_nil(justbox) do
+      {:noreply,
+       put_flash(socket, :error, "Failed to delete justbox, it might have been already removed.")}
+    else
       case Repo.delete(justbox) do
         {:ok, _} ->
-          res =
-            S3.list_objects_by_prefix(justbox.s3_key)
-
-          case res do
-            {:ok, %{"ListBucketResult" => %{"Contents" => []}}} ->
-              socket = put_flash(socket, :info, "Justbox already removed.")
-              {:noreply, push_patch(socket, to: ~p"/justboxes")}
-
-            {:ok, contents} ->
-              contents["ListBucketResult"]["Contents"]
-              |> Enum.each(fn element ->
-                S3.delete_object(element["Key"])
-              end)
-
-              {:noreply, push_patch(socket, to: ~p"/justboxes")}
-
-            _ ->
-              socket =
-                put_flash(
-                  socket,
-                  :error,
-                  "Failed to delete justbox, it might have been already removed."
-                )
-
-              {:noreply, socket}
-          end
+          handle_s3_deletion(justbox.s3_key, socket)
 
         _ ->
-          socket =
-            put_flash(
-              socket,
-              :error,
-              "Failed to delete justbox, it might have been already removed."
-            )
-
-          {:noreply, socket}
+          {:noreply,
+           put_flash(
+             socket,
+             :error,
+             "Failed to delete justbox, it might have been already removed."
+           )}
       end
-    else
-      socket =
-        put_flash(socket, :error, "Failed to delete justbox, it might have been already removed.")
+    end
+  end
 
-      {:noreply, socket}
+  defp handle_s3_deletion(s3_key, socket) do
+    case S3.list_objects_by_prefix(s3_key) do
+      {:ok, %{"ListBucketResult" => %{"Contents" => []}}} ->
+        {:noreply,
+         socket |> put_flash(:info, "Justbox already removed.")}
+
+      {:ok, %{"ListBucketResult" => %{"Contents" => contents}}} ->
+        Enum.each(contents, fn %{"Key" => key} -> S3.delete_object(key) end)
+        {:noreply, socket |> put_flash(:info, "Justbox removed") |> push_patch(to: ~p"/justboxes")}
+
+      _ ->
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           "Failed to delete justbox, it might have been already removed."
+         )}
     end
   end
 
