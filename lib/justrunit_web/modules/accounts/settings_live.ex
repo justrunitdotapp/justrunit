@@ -3,6 +3,7 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
   import JustrunitWeb.BreadcrumbComponent, only: [breadcrumb: 1]
 
   @seconds_in_hour 3600
+  @seconds_in_minute 60
 
   def render(assigns) do
     ~H"""
@@ -22,9 +23,11 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
         <div class="flex">
           <div class="flex flex-col items-center w-1/4 text-center">
             <label class="text-sm text-zinc-500">Computing <%= @time_unit %></label>
-            <p class="text-2xl font-bold"><%= @computing_time %> / <%= @max_computing_time %></p>
+            <p class="text-2xl font-bold">
+              <%= @remaining_computing_time %> / <%= @computing_time_limit %>
+            </p>
             <p class="text-xs text-zinc-500">
-              <%= @computing_time_seconds %> / <%= @max_computing_time_seconds %> sec
+              <%= @remaining_computing_seconds %> / <%= @computing_seconds_limit %> sec
             </p>
           </div>
           <div class="w-px bg-gray-300"></div>
@@ -60,37 +63,34 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
   def mount(_, _session, socket) do
     user =
       Repo.get_by(User, id: socket.assigns.current_user.id)
-      |> Repo.preload(user_plan: :plan)
+      |> Repo.preload(:plan)
 
     form = to_form(User.settings_changeset(user, %{}))
 
     socket =
-      socket
-      |> assign(form: form)
-      |> assign(vcpus: user.user_plan.plan.vcpus)
-      |> assign(ram: user.user_plan.plan.ram)
-      |> assign(storage: user.user_plan.plan.storage)
-      |> assign(plan_type: user.user_plan.plan.type)
-      |> assign(
-        computing_time:
-          calculate_computing_time(user.user_plan.plan.computing_seconds |> Decimal.to_integer())
-      )
-      |> assign(computing_time_seconds: 1)
-      |> assign(
-        max_computing_time_seconds: user.user_plan.plan.computing_seconds |> Decimal.to_integer()
-      )
-      |> assign(
-        time_unit: time_unit(user.user_plan.plan.computing_seconds |> Decimal.to_integer())
-      )
-      |> assign(
-        max_computing_time:
-          div(user.user_plan.plan.computing_seconds |> Decimal.to_integer(), 3600)
+      assign(socket,
+        form: form,
+        vcpus: user.plan.vcpus,
+        ram: user.plan.ram,
+        storage: user.plan.storage,
+        plan_type: user.plan.type,
+        remaining_computing_time:
+          calculate_computing_time(
+            user.plan.remaining_computing_seconds
+            |> Decimal.to_integer()
+          ),
+        computing_time_seconds: 1,
+        computing_time_limit: user.plan.computing_seconds_limit |> Decimal.to_integer(),
+        time_unit: time_unit(user.plan.remaining_computing_seconds |> Decimal.to_integer()),
+        remaining_computing_seconds:
+          user.plan.remaining_computing_seconds |> Decimal.to_integer(),
+        computing_seconds_limit: user.plan.computing_seconds_limit |> Decimal.to_integer()
       )
 
     {:ok, socket}
   end
 
-  defp calculate_computing_time(seconds) when seconds < @seconds_in_hour, do: "<1"
+  defp calculate_computing_time(seconds) when seconds < @seconds_in_minute, do: "<1"
   defp calculate_computing_time(seconds) when seconds > @seconds_in_hour, do: div(seconds, 3600)
 
   defp time_unit(seconds) when seconds >= @seconds_in_hour, do: "Hours"

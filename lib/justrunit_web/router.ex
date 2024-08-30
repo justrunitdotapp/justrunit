@@ -24,10 +24,16 @@ defmodule JustrunitWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :error_tracker_access_check do
+    plug JustrunitWeb.PermissionsChecker, %{"error_tracker_web_ui" => ["url"]}
+  end
+
   scope "/", JustrunitWeb.Modules do
     pipe_through :browser
 
     live "/", Welcome.WelcomeLive, :welcome
+
+    get "/unauthorized", Rap.UnauthorizedController, :index
   end
 
   scope "/", JustrunitWeb.Modules do
@@ -56,8 +62,6 @@ defmodule JustrunitWeb.Router do
     end
   end
 
-  # Require Auth
-
   if Application.compile_env(:justrunit, :dev_routes) do
     import Phoenix.LiveDashboard.Router
 
@@ -66,6 +70,7 @@ defmodule JustrunitWeb.Router do
 
       live_dashboard "/dashboard", metrics: JustrunitWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+      error_tracker_dashboard("/errors", as: :error_tracker_dashboard_dev)
     end
   end
 
@@ -84,9 +89,14 @@ defmodule JustrunitWeb.Router do
   end
 
   scope "/", JustrunitWeb.Modules do
-    pipe_through :browser
+    pipe_through [:browser, :require_authenticated_user, :error_tracker_access_check]
 
     error_tracker_dashboard("/errors")
+  end
+
+  scope "/", JustrunitWeb.Modules do
+    pipe_through :browser
+
     live "/:handle/:justbox_slug", Justboxes.ShowJustboxLive, :show_justbox
   end
 end

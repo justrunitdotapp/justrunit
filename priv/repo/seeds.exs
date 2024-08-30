@@ -11,6 +11,29 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Justrunit.Repo
-alias JustrunitWeb.Modules.Accounts.Plans.Plan
+alias JustrunitWeb.Modules.Rap
+alias JustrunitWeb.Modules.Rap.Role
 
-Repo.insert!(%Plan{vcpus: 1, ram: 1, storage: 1, computing_seconds: 1, type: :free})
+for role <- Rap.DefaultRoles.all() do
+  unless Repo.get_by(Role, name: role.name) do
+    Role.changeset(%Role{}, role) |> Repo.insert!()
+  end
+end
+
+alias JustrunitWeb.Modules.Plans.Plan
+import Ecto.Query
+
+query = from(p in Plan, where: p.id == 1)
+
+unless Repo.exists?(query) do
+  Plan.changeset(%Plan{}, %{
+    vcpus: 1,
+    ram: 1,
+    storage: 1,
+    remaining_computing_seconds: 1,
+    computing_seconds_limit: 1,
+    type: "static",
+    paid: false
+  })
+  |> Repo.insert!()
+end

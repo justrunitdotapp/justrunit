@@ -10,6 +10,7 @@ defmodule Justrunit.Repo.Migrations.CreateUsersAuthTables do
       add :email, :citext, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :utc_datetime
+      add :custom_permissions, :map, default: %{}, null: false
 
       timestamps(type: :utc_datetime)
     end

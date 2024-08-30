@@ -51,6 +51,7 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
   alias JustrunitWeb.Modules.Accounts.User
   alias JustrunitWeb.Modules.Accounts
   alias JustrunitWeb.Modules.Plans.UserPlan
+  alias JustrunitWeb.Modules.Rap.Role
   alias Justrunit.Repo
 
   def mount(_params, _session, socket) do
@@ -72,10 +73,14 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
   def handle_event("save", %{"user" => user_params}, socket) do
     users_count = Repo.aggregate(User, :count, :id)
 
+    role = Repo.get_by(Role, name: "User")
+
     user_params =
       user_params
       |> Map.put("name", "User" <> "#{users_count + 1}")
       |> Map.put("handle", "user" <> "#{users_count + 1}")
+      |> Map.put("plan_id", 1)
+      |> Map.put("role_id", role.id)
 
     result = User.registration_changeset(%User{}, user_params) |> Repo.insert()
 
@@ -86,12 +91,6 @@ defmodule JustrunitWeb.Modules.Accounts.SignUpLive do
             user,
             &url(~p"/users/confirm/#{&1}")
           )
-
-        UserPlan.changeset(%UserPlan{}, %{
-          user_id: user.id,
-          plan_id: 1
-        })
-        |> Repo.insert!()
 
         changeset = Accounts.change_user_registration(user)
         {:noreply, socket |> assign(trigger_submit: true) |> assign_form(changeset)}

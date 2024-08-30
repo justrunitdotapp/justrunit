@@ -7,8 +7,10 @@ defmodule JustrunitWeb.Modules.Plans.Plan do
     field :vcpus, :integer
     field :ram, :integer
     field :storage, :integer
-    field :computing_seconds, :decimal
-    field :type, Ecto.Enum, values: [:free, :paid]
+    field :remaining_computing_seconds, :decimal
+    field :computing_seconds_limit, :decimal
+    field :type, Ecto.Enum, values: [:static, :dynamic]
+    field :paid, :boolean, default: true
 
     has_many :users, JustrunitWeb.Modules.Accounts.User
 
@@ -18,9 +20,25 @@ defmodule JustrunitWeb.Modules.Plans.Plan do
   @doc false
   def changeset(struct \\ %__MODULE__{}, params) do
     struct
-    |> cast(params, [:vcpus, :ram, :storage, :type, :computing_seconds])
-    |> validate_required([:vcpus, :ram, :storage, :type, :computing_seconds])
-    |> validate_inclusion(:type, [:free, :paid])
+    |> cast(params, [
+      :vcpus,
+      :ram,
+      :storage,
+      :type,
+      :paid,
+      :remaining_computing_seconds,
+      :computing_seconds_limit
+    ])
+    |> validate_required([
+      :vcpus,
+      :ram,
+      :storage,
+      :type,
+      :paid,
+      :remaining_computing_seconds,
+      :computing_seconds_limit
+    ])
+    |> validate_inclusion(:type, [:static, :dynamic])
     |> Ecto.Changeset.validate_number(:vcpus,
       greater_than_or_equal_to: 0,
       message: "You can't have negative vcpus."
@@ -33,7 +51,11 @@ defmodule JustrunitWeb.Modules.Plans.Plan do
       greater_than_or_equal_to: 0,
       message: "You can't have negative storage."
     )
-    |> Ecto.Changeset.validate_number(:computing_seconds,
+    |> Ecto.Changeset.validate_number(:remaining_computing_seconds,
+      greater_than_or_equal_to: 0,
+      message: "Computing seconds can't be negative."
+    )
+    |> Ecto.Changeset.validate_number(:computing_seconds_limit,
       greater_than_or_equal_to: 0,
       message: "Computing seconds can't be negative."
     )

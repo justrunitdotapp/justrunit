@@ -43,7 +43,7 @@ defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
       <p class="mb-6 text-xl text-center text-gray-700">
         No additional fees, no auto-renewals on default, simple cancellation.
       </p>
-      <.svelte name="Pricing" props={%{recommendedValue: 25}} socket={@socket} />
+      <.svelte name="Pricing/Pricing" props={%{recommendedValue: 25}} socket={@socket} />
     </section>
     """
   end

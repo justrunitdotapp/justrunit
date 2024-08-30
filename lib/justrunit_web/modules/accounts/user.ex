@@ -10,9 +10,12 @@ defmodule JustrunitWeb.Modules.Accounts.User do
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
+    field :custom_permissions, :map, default: %{}
+
+    belongs_to :plan, JustrunitWeb.Modules.Plans.Plan
+    belongs_to :role, JustrunitWeb.Modules.Rap.Role
 
     has_many :justboxes, JustrunitWeb.Modules.Justboxes.Justbox
-    has_one :user_plan, JustrunitWeb.Modules.Plans.UserPlan
 
     timestamps(type: :utc_datetime)
   end
@@ -46,9 +49,16 @@ defmodule JustrunitWeb.Modules.Accounts.User do
     |> validate_handle(opts)
   end
 
+  def change_plan_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:plan_id])
+    |> validate_required(:plan_id)
+  end
+
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:name, :handle, :email, :password])
+    |> cast(attrs, [:name, :handle, :email, :password, :plan_id, :role_id])
+    |> validate_required([:plan_id, :role_id])
     |> validate_name()
     |> validate_handle(opts)
     |> validate_email(opts)

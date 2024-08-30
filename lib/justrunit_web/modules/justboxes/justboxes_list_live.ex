@@ -44,7 +44,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
 
   def handle_event("delete_justbox", %{"slug" => slug}, socket) do
     current_user_id = socket.assigns.current_user.id
-    justbox = Justrunit.Repo.get_by(Justbox, user_id: current_user_id, slug: slug)
+    justbox = Repo.get_by(Justbox, user_id: current_user_id, slug: slug)
 
     if is_nil(justbox) do
       {:noreply,

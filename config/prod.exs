@@ -7,6 +7,9 @@ import Config
 # before starting your production server.
 config :justrunit, JustrunitWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
+# Enable production routes
+config :justrunit, prod_routes: true
+
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Justrunit.Finch
 

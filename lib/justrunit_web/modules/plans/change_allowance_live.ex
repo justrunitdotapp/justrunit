@@ -16,12 +16,22 @@ defmodule JustrunitWeb.Modules.Plans.ChangeAllowanceLive do
       ]} />
       <h1 class="text-2xl font-bold text-center">Change Allowance</h1>
       <p class="text-lg font-medium text-center text-zinc-800">
-        Current plan: <%= @form.data.type %>
+        Current plan:
+        <%= if @form.data.paid do %>
+          Paid
+        <% else %>
+          Free
+        <% end %>
       </p>
       <.input field={@form[:vcpus]} label="vCPUs" type="text" class="w-full" />
       <.input field={@form[:ram]} label="RAM" type="text" class="w-full" />
       <.input field={@form[:storage]} label="Storage (In GBs)" type="text" class="w-full" />
-      <.input field={@form[:computing_seconds]} label="Storage (In Hours)" type="text" class="w-full" />
+      <.input
+        field={@form[:computing_seconds_limit]}
+        label="Storage (In Hours)"
+        type="text"
+        class="w-full"
+      />
       <.button type="submit" class="mt-4 lg:w-24 lg:ml-auto">Update</.button>
     </.form>
     """
@@ -29,7 +39,6 @@ defmodule JustrunitWeb.Modules.Plans.ChangeAllowanceLive do
 
   alias JustrunitWeb.Modules.Accounts.User
   alias JustrunitWeb.Modules.Plans.Plan
-  alias JustrunitWeb.Modules.Plans.UserPlan
   alias Justrunit.Repo
   alias Ecto.Multi
 
@@ -37,51 +46,19 @@ defmodule JustrunitWeb.Modules.Plans.ChangeAllowanceLive do
 
   def mount(_, _session, socket) do
     user =
-      Repo.get_by(User, id: socket.assigns.current_user.id)
-      |> Repo.preload(user_plan: :plan)
+      Repo.get(User, socket.assigns.current_user.id)
+      |> Repo.preload(:plan)
 
-    IO.inspect(user.user_plan.plan.id, label: "PLAN ID CURRENT")
-
-    form = to_form(Plan.changeset(user.user_plan.plan, %{}))
+    form = to_form(Plan.changeset(user.plan, %{}))
     socket = socket |> assign(form: form)
 
     {:ok, socket}
   end
 
-  defp since_last_edit(naive_datetime) do
-    now = DateTime.utc_now() |> DateTime.to_naive()
-    diff = NaiveDateTime.diff(now, naive_datetime, :second)
-
-    cond do
-      diff < 60 ->
-        "#{diff} s"
-
-      diff < 3600 ->
-        minutes = div(diff, 60)
-        "#{minutes} minute(s)"
-
-      diff < 86400 ->
-        hours = div(diff, 3600)
-        "#{hours} hour(s)"
-
-      diff < 2_592_000 ->
-        days = div(diff, 86400)
-        "#{days} day(s)"
-
-      diff < 31_536_000 ->
-        months = div(diff, 2_592_000)
-        "#{months} month(s)"
-
-      true ->
-        years = div(diff, 31_536_000)
-        "#{years} year(s)"
-    end
-  end
-
   def handle_event("save", %{"plan" => plan_params}, socket) do
     case Plan.plan_is_paid?(plan_params) do
       true ->
-        plan_params = plan_params |> Map.put("type", :paid)
+        plan_params = plan_params |> Map.put("type", :dynamic) |> Map.put("paid", true)
         changeset = Plan.changeset(%Plan{}, plan_params)
 
         planrel_or_rel(plan_params, socket.assigns.current_user.id)
@@ -119,32 +96,32 @@ defmodule JustrunitWeb.Modules.Plans.ChangeAllowanceLive do
     case Repo.get_by(Plan, attrs) do
       nil ->
         Repo.transaction(fn ->
-          user = Repo.get!(User, user_id)
-          new_plan = Plan.changeset(%Plan{}, attrs) |> Repo.insert!()
+          user = Repo.get!(User, user_id) |> Repo.preload(:plan)
 
-          # Step 2: Find the current user_plan
-          current_user_plan = Repo.get_by!(UserPlan, user_id: user.id)
+          attrs =
+            Map.put(attrs, :remaining_computing_seconds, user.plan.remaining_computing_seconds)
+
+          new_plan = Plan.changeset(%Plan{}, attrs) |> Repo.insert!()
+          old_plan_id = user.plan.id
+
+          old_plan_type =
+            user.plan.type
 
           # Step 3: Create a new relationship between the user and the new plan
-          %UserPlan{}
-          |> UserPlan.changeset(%{user_id: user.id, plan_id: new_plan.id})
-          |> Repo.insert!()
+          User.change_plan_changeset(user, %{plan_id: new_plan.id})
+          |> Repo.update!()
 
-          # Step 4: Remove the old relationship
-          Repo.delete!(current_user_plan)
-
-          # Step 5: Check if the old plan has any remaining users
-          old_plan_id = current_user_plan.plan_id
+          # Step 4: Check if the old plan has any remaining users
 
           remaining_users =
             Repo.aggregate(
-              from(up in UserPlan, where: up.plan_id == ^old_plan_id),
+              from(u in User, where: u.plan_id == ^old_plan_id),
               :count
             )
 
-          # Step 6: If no users are left, remove the old plan
-          if remaining_users == 0 and old_plan_id != 1 do
-            Repo.get!(Plan, old_plan_id) |> Repo.delete!()
+          # Step 5: If no users are left, remove the old plan
+          if remaining_users == 0 and old_plan_type == :dynamic do
+            Repo.get!(Plan, user.plan.id) |> Repo.delete!()
           end
 
           # Return the user and new plan for confirmation
@@ -153,30 +130,24 @@ defmodule JustrunitWeb.Modules.Plans.ChangeAllowanceLive do
 
       existing_plan ->
         Repo.transaction(fn ->
-          user = Repo.get!(User, user_id)
-
-          # Step 2: Find the current user_plan
-          current_user_plan = Repo.get_by!(UserPlan, user_id: user.id)
+          user = Repo.get!(User, user_id) |> Repo.preload(:plan)
+          old_plan_id = user.plan.id
+          old_plan_type = user.plan.type
 
           # Step 3: Create a new relationship between the user and the new plan
-          %UserPlan{}
-          |> UserPlan.changeset(%{user_id: user.id, plan_id: existing_plan.id})
-          |> Repo.insert!()
-
-          # Step 4: Remove the old relationship
-          Repo.delete!(current_user_plan)
+          User.change_plan_changeset(user, %{plan_id: existing_plan.id})
+          |> Repo.update!()
 
           # Step 5: Check if the old plan has any remaining users
-          old_plan_id = current_user_plan.plan_id
 
           remaining_users =
             Repo.aggregate(
-              from(up in UserPlan, where: up.plan_id == ^old_plan_id),
+              from(u in User, where: u.plan_id == ^old_plan_id),
               :count
             )
 
           # Step 6: If no users are left, remove the old plan
-          if remaining_users == 0 and old_plan_id != 1 do
+          if remaining_users == 0 and old_plan_type == :dynamic do
             Repo.get!(Plan, old_plan_id) |> Repo.delete!()
           end
 
