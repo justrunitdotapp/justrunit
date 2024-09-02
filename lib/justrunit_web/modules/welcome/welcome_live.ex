@@ -3,7 +3,7 @@ defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
 
   def render(assigns) do
     ~H"""
-    <section class="flex justify-around mt-24">
+    <section class="flex justify-around py-24 bg-hero-architect">
       <header class="flex flex-col">
         <h1 class="mt-24 text-8xl font-bold"><span class="text-blue-500">Simple</span> tool</h1>
         <h2 class="py-4 pl-36 text-5xl font-bold">Efficient <span class="text-blue-500">code sharing</span></h2>
@@ -28,7 +28,7 @@ defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
       </div>
     </section>
 
-    <section class="mx-auto mt-24 max-w-7xl">
+    <section class="mx-auto max-w-7xl">
       <h2 class="text-3xl font-medium text-center">Interactive Playground</h2>
       <!-- <.svelte
           name="Jeditor"

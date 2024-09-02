@@ -21,6 +21,17 @@ module.exports = {
   },
   plugins: [
     require("tailwindcss-font-inter"),
+    require("tailwind-heropatterns")({
+      patterns: [],
+      colors: {
+        default: "#9C92AC",
+        vermillion: "#ffedee",
+      },
+      opacity: {
+        default: "0.4",
+        100: "1.0",
+      },
+    }),
     require("@tailwindcss/forms"),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
