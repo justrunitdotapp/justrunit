@@ -5,8 +5,8 @@ defmodule JustrunitWeb.Modules.Welcome.WelcomeLive do
     ~H"""
     <section class="flex justify-around mt-24">
       <header class="flex flex-col">
-        <h1 class="mt-24 text-4xl font-bold">Simple tool for sharing code</h1>
-        <h2 class="py-4 text-xl">Easy interface, faster development</h2>
+        <h1 class="mt-24 text-8xl font-bold"><span class="text-blue-500">Simple</span> tool</h1>
+        <h2 class="py-4 pl-36 text-5xl font-bold">Efficient <span class="text-blue-500">code sharing</span></h2>
         <a
           href="/sign-up"
           class="px-4 py-2 mx-auto mt-8 font-bold text-white bg-blue-500 rounded transition hover:bg-blue-700"

@@ -4,15 +4,16 @@
     "esbuild-plugin-import-glob": "^0.1.1",
     "esbuild-svelte": "^0.8.1",
     "svelte": "^4.2.18",
-    "svelte-preprocess": "^6.0.1"
+    "svelte-preprocess": "^6.0.1",
+    "tailwindcss-font-inter": "^3.1.0"
   },
   "dependencies": {
-    "esbuild": "^0.16.17",
-    "esbuild-plugin-import-glob": "^0.1.1",
-    "esbuild-svelte": "^0.8.1",
     "@codemirror/lang-javascript": "^6.2.2",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "codemirror-lang-elixir": "^4.0.0",
+    "esbuild": "^0.16.17",
+    "esbuild-plugin-import-glob": "^0.1.1",
+    "esbuild-svelte": "^0.8.1",
     "jquery.fancytree": "^2.38.3",
     "live_svelte": "file:../deps/live_svelte",
     "phoenix": "file:../deps/phoenix",
