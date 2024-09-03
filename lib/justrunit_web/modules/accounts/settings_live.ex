@@ -17,6 +17,7 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
       <h1 class="text-2xl font-bold text-center">Account details</h1>
       <.input field={@form[:name]} label="Name" type="text" class="w-full" />
       <.input field={@form[:handle]} label="Handle" type="text" class="w-full" />
+      <.input field={@form[:bio]} label="Bio" type="textarea" class="w-full" />
       <.button type="submit" class="mt-4 lg:w-24 lg:ml-auto">Update</.button>
       <section class="flex flex-col gap-8">
         <h2 class="text-xl font-bold text-center">Rented resources</h2>

@@ -7,6 +7,7 @@ defmodule Justrunit.Repo.Migrations.CreateUsersAuthTables do
     create table(:users) do
       add :name, :string, null: false
       add :handle, :string, null: false, unique: true
+      add :bio, :string, null: false, default: "Hello"
       add :email, :citext, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :utc_datetime

@@ -17,7 +17,7 @@ defmodule JustrunitWeb.Modules.Accounts.Profile.ProfileLive do
         <div class="mt-6">
             <h2 class="text-lg font-semibold text-gray-800">About Me</h2>
             <p class="mt-2 text-gray-600">
-                I am a passionate web developer with experience in building responsive and user-friendly websites. I love coding and learning new technologies.
+                <%= @bio %>
             </p>
         </div>
     </div>
@@ -36,7 +36,7 @@ defmodule JustrunitWeb.Modules.Accounts.Profile.ProfileLive do
       from(u in JustrunitWeb.Modules.Accounts.User, where: u.handle == ^params["handle"])
       |> Repo.one()
 
-    socket = assign(socket, name: user.name, handle: user.handle)
+    socket = assign(socket, name: user.name, handle: user.handle, bio: user.bio)
     {:noreply, socket}
   end
 end

@@ -5,6 +5,7 @@ defmodule JustrunitWeb.Modules.Accounts.User do
   schema "users" do
     field :name, :string
     field :handle, :string
+    field :bio, :string
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -44,8 +45,9 @@ defmodule JustrunitWeb.Modules.Accounts.User do
 
   def settings_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:name, :handle])
+    |> cast(attrs, [:name, :handle, :bio])
     |> validate_name()
+    |> validate_bio()
     |> validate_handle(opts)
   end
 
@@ -70,6 +72,12 @@ defmodule JustrunitWeb.Modules.Accounts.User do
     |> validate_required([:name])
     |> validate_length(:name, max: 32, message: "must be at most 32 characters long")
     |> validate_length(:name, min: 2, message: "must be at least 2 characters long")
+  end
+
+  def validate_bio(changeset) do
+    changeset
+    |> validate_required([:bio])
+    |> validate_length(:bio, max: 256, message: "must be at most 32 characters long")
   end
 
   def validate_handle(changeset, opts) do
