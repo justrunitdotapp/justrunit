@@ -118,7 +118,10 @@ defmodule JustrunitWeb.Modules.Justboxes.NewJustboxLive do
            ),
          results <-
            consume_uploaded_entries(socket, :project, fn %{path: path}, entry ->
-             S3.put_object("/justboxes/#{params["s3_key"]}/#{entry.client_name}", File.read!(path))
+             S3.put_object(
+               "/justboxes/#{params["s3_key"]}/#{entry.client_name}",
+               File.read!(path)
+             )
            end),
          {:ok, _} <-
            Enum.find_value(results, fn
