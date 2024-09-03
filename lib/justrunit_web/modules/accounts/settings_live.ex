@@ -47,7 +47,16 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
             <p class="text-2xl font-bold"><%= @storage %> GBs</p>
           </div>
         </div>
-        <p class="mx-auto">Plan: <span class="font-bold"><%= @plan_type %></span></p>
+        <p class="mx-auto">
+          Plan:
+          <span class="font-bold">
+            <%= if @paid do %>
+              Paid
+            <% else %>
+              Free
+            <% end %>
+          </span>
+        </p>
         <.link class="mx-auto text-blue-500 hover:underline" href={~p"/settings/change-allowance"}>
           Change allowance
         </.link>
@@ -74,7 +83,7 @@ defmodule JustrunitWeb.Modules.Accounts.SettingsLive do
         vcpus: user.plan.vcpus,
         ram: user.plan.ram,
         storage: user.plan.storage,
-        plan_type: user.plan.type,
+        paid: user.plan.paid,
         remaining_computing_time:
           calculate_computing_time(
             user.plan.remaining_computing_seconds
