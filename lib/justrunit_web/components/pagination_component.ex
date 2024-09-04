@@ -1,6 +1,7 @@
 defmodule JustrunitWeb.PaginationComponent do
   use JustrunitWeb, :live_view
 
+  attr :current_route, :string, required: true
   attr :page_number, :integer, required: true
   attr :pages_count, :integer, required: true
   attr :previous_page?, :boolean, required: true
@@ -11,7 +12,7 @@ defmodule JustrunitWeb.PaginationComponent do
     <div class="flex items-center space-x-2">
       <%= if @previous_page? do %>
         <.link
-          patch={~p"/justboxes?page=#{@page_number - 1}"}
+          patch={~p"/#{@current_route}?page=#{@page_number - 1}"}
           class="px-4 py-2 h-10 font-bold text-white bg-blue-500 rounded-md"
         >
           <.icon name="hero-arrow-left" class="w-6 h-6" />
@@ -35,7 +36,7 @@ defmodule JustrunitWeb.PaginationComponent do
           </a>
         <% else %>
           <.link
-            patch={~p"/justboxes?page=#{page}"}
+            patch={~p"/#{@current_route}?page=#{page}"}
             class="px-4 py-2 h-10 font-bold text-blue-500 rounded-md border-2 border-blue-500 hover:bg-neutral-300"
           >
             <%= page %>
@@ -45,7 +46,7 @@ defmodule JustrunitWeb.PaginationComponent do
 
       <%= if @next_page? do %>
         <.link
-          patch={~p"/justboxes?page=#{@page_number + 1}"}
+          patch={~p"/#{@current_route}?page=#{@page_number + 1}"}
           class="px-4 py-2 h-10 font-bold text-white bg-blue-500 rounded-md"
         >
           <.icon name="hero-arrow-right" class="w-6 h-6" />

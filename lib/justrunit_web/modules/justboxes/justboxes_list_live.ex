@@ -23,6 +23,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
       </div>
       <%= if @pages_count > 1 do %>
         <.pagination
+          current_route="justboxes"
           page_number={@page_number}
           pages_count={@pages_count}
           previous_page?={@previous_page?}

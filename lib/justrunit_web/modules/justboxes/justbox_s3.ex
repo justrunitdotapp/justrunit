@@ -1,5 +1,5 @@
 defmodule JustrunitWeb.Modules.Justboxes.JustboxS3 do
-    alias Justrunit.S3
+  alias Justrunit.S3
 
   def put_object(key, content, opts \\ []) do
     S3.put_object("justboxes/#{key}")
