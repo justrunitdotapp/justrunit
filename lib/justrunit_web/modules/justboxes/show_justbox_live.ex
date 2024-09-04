@@ -23,7 +23,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
   import Ecto.Query
   alias Justrunit.Repo
-  alias Justrunit.S3
+  alias JustrunitWeb.Modules.Justboxes.JustboxS3
 
   def mount(_params, _session, socket) do
     socket = socket |> assign(error: false) |> assign(file: "")
@@ -67,7 +67,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   def handle_event("new_file", %{"handle" => handle, "file_s3_key" => file_s3_key}, socket) do
     {:ok, justbox_owner} = get_user_by_handle(handle)
 
-    S3.put_object(
+    JustboxS3.put_object(
       "#{justbox_owner.id}/#{socket.assigns.justbox_name}/#{file_s3_key}",
       "some_content123"
     )
@@ -84,7 +84,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("update_file", %{"s3_key" => s3_key, "content" => content}, socket) do
-    S3.put_object(
+    JustboxS3.put_object(
       "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}",
       content
     )
@@ -102,7 +102,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   def handle_event("new_folder", %{"handle" => handle}, socket) do
-    S3.put_object(
+    JustboxS3.put_object(
       "justrunit",
       "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/folder3/",
       ""
@@ -119,7 +119,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
 
   def handle_event("fetch_file", %{"s3_key" => s3_key}, socket) do
     res =
-      S3.read_object(
+      JustboxS3.read_object(
         "#{socket.assigns.current_justbox_owner_id}/#{socket.assigns.justbox_name}/#{s3_key}"
       )
 
@@ -194,7 +194,7 @@ defmodule JustrunitWeb.Modules.Justboxes.ShowJustboxLive do
   end
 
   defp list_s3_objects(s3_key) do
-    res = S3.list_objects_by_prefix(s3_key)
+    res = JustboxS3.list_objects_by_prefix("justboxes/#{s3_key}")
 
     case res do
       {:ok, justboxes} ->
