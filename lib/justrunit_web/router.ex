@@ -83,8 +83,7 @@ defmodule JustrunitWeb.Router do
       live "/settings/change-allowance", Plans.ChangeAllowanceLive, :change_allowance
       live "/new-justbox", Justboxes.NewJustboxLive, :new_justbox
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
-      live "/justboxes/", Justboxes.JustboxesListLive, :justboxes_list
-      live "/justboxes/:page", Justboxes.JustboxesListLive, :justboxes_list
+      live "/justboxes", Justboxes.JustboxesListLive, :justboxes_list
     end
   end
 

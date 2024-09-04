@@ -11,15 +11,15 @@ defmodule JustrunitWeb.PaginationComponent do
     <div class="flex items-center space-x-2">
       <%= if @previous_page? do %>
         <.link
-          patch={~p"/justboxes/#{@page_number - 1}"}
-          class="bg-blue-500 text-white px-4 py-2 rounded-md font-bold h-10"
+          patch={~p"/justboxes?page=#{@page_number - 1}"}
+          class="px-4 py-2 h-10 font-bold text-white bg-blue-500 rounded-md"
         >
           <.icon name="hero-arrow-left" class="w-6 h-6" />
         </.link>
       <% else %>
         <a
           href="#"
-          class="bg-blue-400 cursor-not-allowed text-white px-4 py-2 rounded-md font-bold h-10"
+          class="px-4 py-2 h-10 font-bold text-white bg-blue-400 rounded-md cursor-not-allowed"
         >
           <.icon name="hero-arrow-left" class="w-6 h-6" />
         </a>
@@ -29,14 +29,14 @@ defmodule JustrunitWeb.PaginationComponent do
         <%= if page == @page_number do %>
           <a
             href="#"
-            class="border-2 border-blue-500 bg-blue-500 text-white px-4 py-2 rounded-md font-bold h-10"
+            class="px-4 py-2 h-10 font-bold text-white bg-blue-500 rounded-md border-2 border-blue-500"
           >
             <%= page %>
           </a>
         <% else %>
           <.link
-            patch={~p"/justboxes/#{page}"}
-            class="border-2 border-blue-500 hover:bg-neutral-300 text-blue-500 px-4 py-2 rounded-md font-bold h-10"
+            patch={~p"/justboxes?page=#{page}"}
+            class="px-4 py-2 h-10 font-bold text-blue-500 rounded-md border-2 border-blue-500 hover:bg-neutral-300"
           >
             <%= page %>
           </.link>
@@ -45,15 +45,15 @@ defmodule JustrunitWeb.PaginationComponent do
 
       <%= if @next_page? do %>
         <.link
-          patch={~p"/justboxes/#{@page_number + 1}"}
-          class="bg-blue-500 text-white px-4 py-2 rounded-md font-bold h-10"
+          patch={~p"/justboxes?page=#{@page_number + 1}"}
+          class="px-4 py-2 h-10 font-bold text-white bg-blue-500 rounded-md"
         >
           <.icon name="hero-arrow-right" class="w-6 h-6" />
         </.link>
       <% else %>
         <a
           href="#"
-          class="bg-blue-400 cursor-not-allowed text-white px-4 py-2 rounded-md font-bold h-10"
+          class="px-4 py-2 h-10 font-bold text-white bg-blue-400 rounded-md cursor-not-allowed"
         >
           <.icon name="hero-arrow-right" class="w-6 h-6" />
         </a>
