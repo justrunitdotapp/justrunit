@@ -4,7 +4,8 @@ defmodule Justrunit.Repo.Migrations.CreateUsersAuthTables do
   def change do
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
 
-    create table(:users) do
+    create table(:users, primary_key: false) do
+      add :id, :binary_id, primary_key: true
       add :name, :string, null: false
       add :handle, :string, null: false, unique: true
       add :bio, :string, null: false, default: "Hello"
@@ -20,7 +21,7 @@ defmodule Justrunit.Repo.Migrations.CreateUsersAuthTables do
     create unique_index(:users, [:email])
 
     create table(:users_tokens) do
-      add :user_id, references(:users, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :binary_id, on_delete: :delete_all), null: false
       add :token, :binary, null: false
       add :context, :string, null: false
       add :sent_to, :string

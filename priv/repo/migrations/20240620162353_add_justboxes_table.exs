@@ -6,7 +6,7 @@ defmodule Justrunit.Repo.Migrations.AddJustboxesTable do
       add :name, :string, null: false, unique: true
       add :slug, :string, null: false, unique: true
       add :description, :string, null: false
-      add :user_id, references(:users, on_delete: :delete_all), null: false
+      add :user_id, references(:users, type: :binary_id, on_delete: :delete_all), null: false
       add :s3_key, :string, null: false
       timestamps()
     end

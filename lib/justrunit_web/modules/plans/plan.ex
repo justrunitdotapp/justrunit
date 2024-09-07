@@ -3,6 +3,8 @@ defmodule JustrunitWeb.Modules.Plans.Plan do
   import Ecto.Changeset
   alias Justrunit.Repo
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+
   schema "plans" do
     field :vcpus, :integer
     field :ram, :integer
@@ -11,6 +13,7 @@ defmodule JustrunitWeb.Modules.Plans.Plan do
     field :computing_seconds_limit, :decimal
     field :type, Ecto.Enum, values: [:static, :dynamic]
     field :paid, :boolean, default: true
+    field :description, :string, default: ""
 
     has_many :users, JustrunitWeb.Modules.Accounts.User
 
@@ -27,7 +30,8 @@ defmodule JustrunitWeb.Modules.Plans.Plan do
       :type,
       :paid,
       :remaining_computing_seconds,
-      :computing_seconds_limit
+      :computing_seconds_limit,
+      :description
     ])
     |> validate_required([
       :vcpus,
@@ -36,7 +40,8 @@ defmodule JustrunitWeb.Modules.Plans.Plan do
       :type,
       :paid,
       :remaining_computing_seconds,
-      :computing_seconds_limit
+      :computing_seconds_limit,
+      :description
     ])
     |> validate_inclusion(:type, [:static, :dynamic])
     |> Ecto.Changeset.validate_number(:vcpus,

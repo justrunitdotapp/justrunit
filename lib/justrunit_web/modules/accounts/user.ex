@@ -2,6 +2,8 @@ defmodule JustrunitWeb.Modules.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+
   schema "users" do
     field :name, :string
     field :handle, :string
@@ -13,8 +15,8 @@ defmodule JustrunitWeb.Modules.Accounts.User do
     field :confirmed_at, :utc_datetime
     field :custom_permissions, :map, default: %{}
 
-    belongs_to :plan, JustrunitWeb.Modules.Plans.Plan
-    belongs_to :role, JustrunitWeb.Modules.Rap.Role
+    belongs_to :plan, JustrunitWeb.Modules.Plans.Plan, type: :binary_id
+    belongs_to :role, JustrunitWeb.Modules.Rap.Role, type: :binary_id
 
     has_many :justboxes, JustrunitWeb.Modules.Justboxes.Justbox
 

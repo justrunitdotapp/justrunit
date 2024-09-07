@@ -23,7 +23,7 @@ end
 alias JustrunitWeb.Modules.Plans.Plan
 import Ecto.Query
 
-query = from(p in Plan, where: p.id == 1)
+query = from(p in Plan, where: p.description == "default")
 
 unless Repo.exists?(query) do
   Plan.changeset(%Plan{}, %{
@@ -33,7 +33,8 @@ unless Repo.exists?(query) do
     remaining_computing_seconds: 1,
     computing_seconds_limit: 1,
     type: "static",
-    paid: false
+    paid: false,
+    description: "default"
   })
   |> Repo.insert!()
 end

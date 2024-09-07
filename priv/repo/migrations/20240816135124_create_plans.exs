@@ -3,7 +3,8 @@ defmodule Justrunit.Repo.Migrations.CreatePlans do
 
   def up do
     # Create plans table
-    create table(:plans) do
+    create table(:plans, primary_key: false) do
+      add :id, :binary_id, primary_key: true
       add :vcpus, :integer, null: false
       add :ram, :integer, null: false
       add :storage, :integer, null: false
@@ -11,6 +12,7 @@ defmodule Justrunit.Repo.Migrations.CreatePlans do
       add :computing_seconds_limit, :decimal, precision: 20, scale: 10, null: false
       add :type, :string, null: false
       add :paid, :boolean, default: false, null: false
+      add :description, :string, null: false
       timestamps(type: :utc_datetime)
     end
 
@@ -36,7 +38,7 @@ defmodule Justrunit.Repo.Migrations.CreatePlans do
     execute "ALTER TABLE plans ALTER COLUMN type TYPE plan_type USING (type::plan_type)"
 
     alter table(:users) do
-      add :plan_id, references(:plans, on_delete: :restrict), null: false
+      add :plan_id, references(:plans, type: :binary_id, on_delete: :restrict), null: false
     end
   end
 

@@ -3,6 +3,8 @@ defmodule JustrunitWeb.Modules.Rap.Role do
   import Ecto.Changeset
   alias JustrunitWeb.Modules.Rap
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+
   schema "roles" do
     field(:name, :string)
     field(:permissions, :map)

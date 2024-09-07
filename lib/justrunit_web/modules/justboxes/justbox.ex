@@ -2,6 +2,8 @@ defmodule JustrunitWeb.Modules.Justboxes.Justbox do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+
   @derive {
     Flop.Schema,
     sortable: [:updated_at], filterable: []
@@ -12,7 +14,7 @@ defmodule JustrunitWeb.Modules.Justboxes.Justbox do
     field :slug, :string
     field :description, :string
     field :s3_key, :string
-    belongs_to :user, JustrunitWeb.Modules.Accounts.User
+    belongs_to :user, JustrunitWeb.Modules.Accounts.User, type: :binary_id
 
     timestamps()
   end
