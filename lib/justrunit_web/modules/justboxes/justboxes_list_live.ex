@@ -30,6 +30,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListLive do
           next_page?={@next_page?}
         />
       <% end %>
+      <span class="pb-12" />
     </div>
     """
   end

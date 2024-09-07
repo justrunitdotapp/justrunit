@@ -1,6 +1,5 @@
 defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
   use Phoenix.Component
-  alias Phoenix.LiveView.JS
 
   attr :justboxes, :list, required: true
   attr :user_handle, :string, required: true
@@ -12,6 +11,7 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
         :for={{justbox, index} <- Enum.with_index(@justboxes)}
         name={justbox.name}
         user_handle={@user_handle}
+        description={justbox.description}
         last_changed={since_last_edit(justbox.updated_at)}
         is_last={is_last?(index, Enum.count(@justboxes))}
       />
@@ -54,96 +54,38 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
 
   attr :is_last, :boolean, default: false
   attr :name, :string, required: true
+  attr :description, :string, required: true
   attr :last_changed, :string, required: true
-
-  def justbox(assigns) when assigns.is_last == false do
-    assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
-
-    ~H"""
-    <div class="flex relative flex-row justify-between p-2 space-x-4 border-b border-gray-800 hover:bg-neutral-300 group">
-      <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline"><%= @name %></a>
-      <p class="text-gray-600 group-hover:hidden">Last updated <%= @last_changed %></p>
-      <button
-        phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
-        phx-value-name={@name_slug}
-        class="hidden font-medium text-red-500 group-hover:block hover:underline"
-      >
-        Remove
-      </button>
-
-      <div
-        id={"popover-content-#{@name_slug}"}
-        phx-click-away={JS.hide(to: "#popover-content-#{@name_slug}")}
-        class="border border-zinc-300 p-4 rounded-md shadow-md bg-white absolute top-0 right-[-8px] transform translate-x-full z-1000 hidden"
-      >
-        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-r-8 border-b-8 border-t-transparent border-b-transparent border-r-zinc-300">
-        </div>
-        <p class="mb-2 font-medium text-center text-gray-800">Are you sure?</p>
-        <div class="flex justify-center space-x-2">
-          <button
-            phx-click="delete_justbox"
-            phx-value-slug={@name_slug}
-            class="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600"
-          >
-            Yes
-          </button>
-          <button
-            phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
-            class="px-3 py-1 text-gray-700 rounded-md border border-gray-300 hover:bg-zinc-200"
-          >
-            No
-          </button>
-        </div>
-      </div>
-    </div>
-    """
-  end
 
   def justbox(assigns) do
     assigns = assign(assigns, name_slug: Slug.slugify(assigns.name))
 
-    ~H"""
-    <div
-      id={"popover-#{@name_slug}"}
-      class="flex relative flex-row justify-between p-2 space-x-4 hover:bg-neutral-300 group"
-    >
-      <a href={"/#{@user_handle}/#{@name_slug}"} class="font-medium hover:underline">
-        <%= @name %>
-      </a>
-      <p class="text-gray-600 group-hover:hidden">Last updated <%= @last_changed %></p>
-      <button
-        phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
-        phx-value-name={@name_slug}
-        class="hidden font-medium text-red-500 group-hover:block hover:underline"
-      >
-        Remove
-      </button>
+    border_class = if assigns.is_last, do: "", else: "border-b border-gray-300"
+    assigns = assign(assigns, border_class: border_class)
 
-      <div
-        id={"popover-content-#{@name_slug}"}
-        phx-click-away={JS.hide(to: "#popover-content-#{@name_slug}")}
-        class="border border-zinc-300 p-4 rounded-md shadow-md bg-white absolute top-0 right-[-8px] transform translate-x-full z-1000 hidden"
-      >
-        <div class="absolute top-3 right-full w-0 h-0 border-t-8 border-r-8 border-b-8 border-t-transparent border-b-transparent border-r-zinc-300">
-        </div>
-        <p class="mb-2 font-medium text-center text-gray-800">Are you sure?</p>
-        <div class="flex justify-center space-x-2">
-          <button
+    ~H"""
+    <div class={"flex relative flex-col p-4 hover:bg-gray-50 group " <> @border_class}>
+      <div class="flex justify-between items-center">
+        <a
+          href={"/#{@user_handle}/#{@name_slug}"}
+          class="text-lg font-semibold text-gray-900 hover:underline"
+        >
+          <%= @name %>
+        </a>
+        <p class="text-sm text-gray-500">Last updated <%= @last_changed %></p>
+      </div>
+      <p class="mt-2 text-sm text-gray-600 break-words">
+        <%= @description %>
+      </p>
+    </div>
+
+    <!-- <button
             phx-click="delete_justbox"
             phx-value-slug={@name_slug}
             class="px-3 py-1 text-white bg-red-500 rounded-md hover:bg-red-600"
           >
             Yes
-          </button>
-          <button
-            phx-click={JS.toggle(to: "#popover-content-#{@name_slug}")}
-            class="px-3 py-1 text-gray-700 rounded-md border border-gray-300 hover:bg-zinc-200"
-          >
-            No
-          </button>
-        </div>
-      </div>
-    </div>
+          </button> -->
     """
   end
 end

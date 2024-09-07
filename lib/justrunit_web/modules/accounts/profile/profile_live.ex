@@ -83,7 +83,6 @@ defmodule JustrunitWeb.Modules.Accounts.Profile.ProfileLive do
     q = rem(meta.total_count, p.page_size)
     pages_count = if q == 0, do: d, else: d + 1
 
-
     socket =
       assign(socket,
         name: user.name,
