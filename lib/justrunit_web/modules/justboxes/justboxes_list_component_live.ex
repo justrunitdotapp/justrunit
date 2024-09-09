@@ -78,7 +78,6 @@ defmodule JustrunitWeb.Modules.Justboxes.JustboxesListComponentLive do
         <%= @description %>
       </p>
     </div>
-
     <!-- <button
             phx-click="delete_justbox"
             phx-value-slug={@name_slug}
