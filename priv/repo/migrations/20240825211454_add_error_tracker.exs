@@ -1,4 +1,4 @@
-defmodule MyApp.Repo.Migrations.AddErrorTracker do
+defmodule Justrunit.Repo.Migrations.AddErrorTracker do
   use Ecto.Migration
 
   def up, do: ErrorTracker.Migration.up(version: 3)

@@ -71,7 +71,7 @@ defmodule Justrunit.MixProject do
       {:live_svelte, "~> 0.13.2"},
       {:req, "~> 0.5.0"},
       {:req_s3, "~> 0.2.3"},
-      {:error_tracker, "~> 0.2"}
+      {:error_tracker, "~> 0.2.5"}
     ]
   end
 

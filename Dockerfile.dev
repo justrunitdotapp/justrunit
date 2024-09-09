@@ -2,6 +2,7 @@ ARG ELIXIR_VERSION=1.17.2
 ARG OTP_VERSION=27.0.1
 ARG DEBIAN_VERSION=bullseye-20240722-slim
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
+ARG CLOUD_HYPERVISOR_VERSION=v41.0
 
 FROM ${BUILDER_IMAGE}
 
@@ -11,7 +12,12 @@ ENV MIX_ENV=dev
 # Install dependencies
 RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools netcat \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs
+
+# Install cloud-hypervisor as pre-built binary
+RUN curl -fsSL https://github.com/cloud-hypervisor/cloud-hypervisor/releases/download/v41.0/cloud-hypervisor-static -o /usr/local/bin/cloud-hypervisor \
+    && chmod +x /usr/local/bin/cloud-hypervisor
 
 # Set working directory
 WORKDIR /app
