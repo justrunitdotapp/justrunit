@@ -11,7 +11,9 @@ FROM ${BUILDER_IMAGE}
 ENV MIX_ENV=dev
 
 # Install dependencies
-RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools \
+RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools \ 
+    libncurses5-dev libssl-dev bison flex libelf-dev bc \
+    qemu-utils \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs
@@ -19,6 +21,20 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install
 # Install cloud-hypervisor as pre-built binary
 RUN curl -fsSL https://github.com/cloud-hypervisor/cloud-hypervisor/releases/download/v41.0/cloud-hypervisor-static -o /usr/local/bin/cloud-hypervisor \
     && chmod +x /usr/local/bin/cloud-hypervisor
+
+# Clone the Cloud Hypervisor Linux branch
+RUN git clone --depth 1 https://github.com/cloud-hypervisor/linux.git -b ch-6.2 linux-cloud-hypervisor
+WORKDIR linux-cloud-hypervisor
+# Use the x86-64 cloud-hypervisor kernel config to build your kernel for x86-64
+RUN curl -O https://raw.githubusercontent.com/cloud-hypervisor/cloud-hypervisor/main/resources/linux-config-x86_64
+RUN cp linux-config-x86_64 .config
+# Do native build of the x86-64 kernel
+RUN KCFLAGS="-Wa,-mx86-used-note=no" make bzImage -j `nproc`
+WORKDIR ..
+
+# Download cloud image and convert it to a format accepted by cloud-hypervisor
+RUN curl -O https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+RUN qemu-img convert -p -f qcow2 -O raw focal-server-cloudimg-amd64.img focal-server-cloudimg-amd64.raw
 
 # Set working directory
 WORKDIR /app
