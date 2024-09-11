@@ -3,6 +3,7 @@ ARG OTP_VERSION=27.0.1
 ARG DEBIAN_VERSION=bullseye-20240722-slim
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG CLOUD_HYPERVISOR_VERSION=v41.0
+ARG KERNEL_VERSION=5.11
 
 FROM ${BUILDER_IMAGE}
 
@@ -10,7 +11,7 @@ FROM ${BUILDER_IMAGE}
 ENV MIX_ENV=dev
 
 # Install dependencies
-RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools netcat \
+RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs
