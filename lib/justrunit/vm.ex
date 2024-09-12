@@ -3,8 +3,7 @@ defmodule Justrunit.Vm do
   Module for managing microVMs using Cloud Hypervisor.
   """
 
-  def start(cpu_count, memory_size, disk_image, cloudinit_path) do
-    kernel_path = System.get_env("KERNEL_PATH")
+  def start(cpu_count, memory_size, disk_image, cloudinit_path, kernel_path \\ System.get_env("KERNEL_PATH")) do
 
     case validate_memory(memory_size) do
       :ok ->
