@@ -10,7 +10,7 @@ defmodule Justrunit.Vm do
       :ok ->
         cmd = [
           "--kernel #{kernel_path}",
-          "--disk path=#{disk_image} path=#{initrd_path}",
+          "--disk path=#{disk_image} path=#{cloudinit_path}",
           "--cmdline \"console=hvc0 root=/dev/vda1 rw\"",
           "--cpus boot=#{cpu_count}",
           "--memory size=#{memory_size}",
