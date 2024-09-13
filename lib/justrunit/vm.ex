@@ -28,8 +28,16 @@ defmodule Justrunit.Vm do
     end
   end
 
-  @spec validate_memory(String.t()) :: :ok | {:error, String.t()}
-  def validate_memory(memory_size) do
+  @spec validate_memory(String.t() | integer()) :: :ok | {:error, String.t()}
+  def validate_memory(memory_size) when is_integer(memory_size) do
+    if memory_size > 0 do
+      :ok
+    else
+      {:error, "Memory size must be positive"}
+    end
+  end
+
+  def validate_memory(memory_size) when is_binary(memory_size) do
     case memory_size do
       "" ->
         {:error, "Memory size cannot be empty"}
@@ -52,11 +60,14 @@ defmodule Justrunit.Vm do
 
   defp parse_and_validate(binary) do
     case Integer.parse(binary) do
-      {value, _} when value > 0 ->
+      {value, ""} when value > 0 ->
         :ok
 
-      _ ->
+      {_, ""} ->
         {:error, "Memory size must be positive"}
+
+      _ ->
+        {:error, "Invalid memory size format"}
     end
   end
 end
