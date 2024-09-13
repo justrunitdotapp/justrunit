@@ -37,37 +37,27 @@ defmodule Justrunit.Vm do
     end
   end
 
+  def validate_memory(""), do: {:error, "Memory size cannot be empty"}
+
   def validate_memory(memory_size) when is_binary(memory_size) do
-    case memory_size do
-      "" ->
-        {:error, "Memory size cannot be empty"}
+    cond do
+      !has_valid_postfix?(memory_size) ->
+        {:error, "Invalid postfix, valid postfixes: k, K, m, M, g, G, t, T."}
 
-      <<_prefix::binary-size(1), rest::binary>> ->
-        if prefix(rest) do
-          parse_and_validate(rest)
-        else
-          {:error, "Invalid memory size format. Please use a valid unit (k, m, g, t)"}
-        end
-
-      _ ->
-        {:error, "Invalid memory size format. Please use a valid unit (k, m, g, t)"}
-    end
-  end
-
-  defp prefix(binary) do
-    Enum.any?(["k", "K", "m", "M", "g", "G", "t", "T"], fn p -> String.starts_with?(binary, p) end)
-  end
-
-  defp parse_and_validate(binary) do
-    case Integer.parse(binary) do
-      {value, ""} when value > 0 ->
-        :ok
-
-      {_, ""} ->
+      !positive_value?(memory_size) ->
         {:error, "Memory size must be positive"}
 
-      _ ->
-        {:error, "Invalid memory size format"}
+      true ->
+        :ok
     end
+  end
+
+  defp has_valid_postfix?(binary) do
+    String.ends_with?(binary, ["k", "K", "m", "M", "g", "G", "t", "T"])
+  end
+
+  defp positive_value?(binary) do
+    {number, _postfix} = Integer.parse(binary)
+    number > 0
   end
 end
