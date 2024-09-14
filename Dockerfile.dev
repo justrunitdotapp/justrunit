@@ -10,8 +10,11 @@ FROM ${BUILDER_IMAGE}
 # Set development environment
 ENV MIX_ENV=dev
 
-# Install dependencies
-RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools \ 
+##
+# Install dependencies 
+##
+
+RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools dosfstools mtools \ 
     libncurses5-dev libssl-dev bison flex libelf-dev bc \
     qemu-utils \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
@@ -21,6 +24,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install
 # Install cloud-hypervisor as pre-built binary
 RUN curl -fsSL https://github.com/cloud-hypervisor/cloud-hypervisor/releases/download/v41.0/cloud-hypervisor-static -o /usr/local/bin/cloud-hypervisor \
     && chmod +x /usr/local/bin/cloud-hypervisor
+
+##
+# Build Linux Kernel
+##
 
 # Clone the Cloud Hypervisor Linux branch
 RUN git clone --depth 1 https://github.com/cloud-hypervisor/linux.git -b ch-6.2 linux-cloud-hypervisor
@@ -38,6 +45,10 @@ RUN qemu-img convert -p -f qcow2 -O raw focal-server-cloudimg-amd64.img focal-se
 
 # Set working directory
 WORKDIR /app
+
+##
+# Prepare app and run it
+##
 
 # Install hex + rebar
 RUN mix local.hex --force && \
