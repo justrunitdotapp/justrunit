@@ -7,7 +7,7 @@ defmodule Justrunit.Vm do
         cpu_count,
         memory_size,
         disk_image,
-        cloudinit_path \\ "/tmp/ubuntu-cloudinit.img",
+        cloudinit_path \\ "/ubuntu-cloudinit.img",
         kernel_path \\ "/linux-cloud-hypervisor/arch/x86/boot/compressed/vmlinux.bin"
       ) do
     case validate_memory(memory_size) do
