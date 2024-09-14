@@ -39,9 +39,20 @@ RUN cp linux-config-x86_64 .config
 RUN KCFLAGS="-Wa,-mx86-used-note=no" make bzImage -j `nproc`
 WORKDIR ..
 
-# Download cloud image and convert it to a format accepted by cloud-hypervisor
-RUN curl -O https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
-RUN qemu-img convert -p -f qcow2 -O raw focal-server-cloudimg-amd64.img focal-server-cloudimg-amd64.raw
+##
+# Create configuration disk
+##
+
+RUN set -ex && \
+ rm -f ubuntu-cloudinit.img && \
+ mkdosfs -n CIDATA -C ubuntu-cloudinit.img 8192 && \
+ mkdir -p test_data/cloud-init/ubuntu/local && \
+ touch test_data/cloud-init/ubuntu/local/user-data \
+      test_data/cloud-init/ubuntu/local/meta-data \
+      test_data/cloud-init/ubuntu/local/network-config && \
+ mcopy -oi ubuntu-cloudinit.img -s test_data/cloud-init/ubuntu/local/user-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s test_data/cloud-init/ubuntu/local/meta-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s test_data/cloud-init/ubuntu/local/network-config ::
 
 # Set working directory
 WORKDIR /app
