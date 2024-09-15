@@ -4,6 +4,9 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "4000:4000"
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
     depends_on:
       - pg
       - minio

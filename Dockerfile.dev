@@ -15,7 +15,7 @@ ENV MIX_ENV=dev
 ##
 
 RUN apt-get update -y && apt-get install -y build-essential git curl inotify-tools dosfstools mtools \ 
-    libncurses5-dev libssl-dev bison flex libelf-dev bc \
+    libncurses5-dev libssl-dev bison flex libelf-dev bc libcap2-bin \
     qemu-utils \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
@@ -32,9 +32,11 @@ RUN curl -fsSL https://github.com/cloud-hypervisor/cloud-hypervisor/releases/dow
 # Clone the Cloud Hypervisor Linux branch
 RUN git clone --depth 1 https://github.com/cloud-hypervisor/linux.git -b ch-6.2 linux-cloud-hypervisor
 WORKDIR linux-cloud-hypervisor
+
 # Use the x86-64 cloud-hypervisor kernel config to build your kernel for x86-64
 RUN curl -O https://raw.githubusercontent.com/cloud-hypervisor/cloud-hypervisor/main/resources/linux-config-x86_64
 RUN cp linux-config-x86_64 .config
+
 # Do native build of the x86-64 kernel
 RUN KCFLAGS="-Wa,-mx86-used-note=no" make bzImage -j `nproc`
 WORKDIR ..
@@ -43,23 +45,30 @@ WORKDIR ..
 # Create configuration disk
 ##
 
-RUN set -ex && \
- rm -f ubuntu-cloudinit.img && \
- mkdosfs -n CIDATA -C ubuntu-cloudinit.img 8192 && \
- mkdir -p test_data/cloud-init/ubuntu/local && \
- touch test_data/cloud-init/ubuntu/local/user-data \
-      test_data/cloud-init/ubuntu/local/meta-data \
-      test_data/cloud-init/ubuntu/local/network-config && \
- mcopy -oi ubuntu-cloudinit.img -s test_data/cloud-init/ubuntu/local/user-data :: && \
- mcopy -oi ubuntu-cloudinit.img -s test_data/cloud-init/ubuntu/local/meta-data :: && \
- mcopy -oi ubuntu-cloudinit.img -s test_data/cloud-init/ubuntu/local/network-config ::
+COPY cloudinit_config cloudinit_config
 
-# Set working directory
-WORKDIR /app
+RUN set -ex && \
+ rm -f /tmp/ubuntu-cloudinit.img && \
+ mkdosfs -n CIDATA -C ubuntu-cloudinit.img 8192 && \
+ mcopy -oi ubuntu-cloudinit.img -s cloudinit_config/user-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s cloudinit_config/meta-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s cloudinit_config/network-config ::
+
+##
+# Download disk image for storage
+##
+
+# Download image
+RUN curl -O https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+# Convert image to format compatible with cloud-hypervisor
+RUN qemu-img convert -p -f qcow2 -O raw focal-server-cloudimg-amd64.img focal-server-cloudimg-amd64.raw
 
 ##
 # Prepare app and run it
 ##
+
+# Set working directory
+WORKDIR /app
 
 # Install hex + rebar
 RUN mix local.hex --force && \
