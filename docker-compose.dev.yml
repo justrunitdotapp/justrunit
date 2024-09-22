@@ -4,12 +4,16 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "4000:4000"
-    cap_add:
-      - NET_ADMIN
-      - SYS_ADMIN
     depends_on:
-      - pg
-      - minio
+        pg:
+          condition: service_healthy
+          restart: true
+        minio:
+          condition: service_healthy
+          restart: true
+        cloud_hypervisor:
+          condition: service_healthy
+          restart: true
     environment:
       - MIX_ENV=dev
       - PHX_HOST=localhost
@@ -33,6 +37,12 @@ services:
       - POSTGRES_DB=justrunit_dev
     volumes:
       - pgdata:/tmp/pg_data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d justrunit_dev"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
   minio:
     image: minio/minio
@@ -45,11 +55,19 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
     command: server /data --console-address ":9001"
-
-  setup_buckets:
+    healthcheck:
+      test: ["CMD-SHELL", "curl -I http://localhost:9000/minio/health/live"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s  
+      
+  setup_buckets:       
     image: minio/mc
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
+        restart: true
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add jri_minio http://minio:9000 minioadmin minioadmin &&
@@ -58,6 +76,21 @@ services:
       exit 0
       "
 
+  cloud_hypervisor:
+    build:
+      context: .
+      dockerfile: Dockerfile.cloud-hypervisor
+    privileged: true
+    devices:
+      - /dev/kvm:/dev/kvm
+    volumes:
+      - ./kernel:/kernel
+      - ./cloudinit_config:/cloudinit_config
+      - ./images:/images
+    
 volumes:
   pgdata:
   miniodata:
+  cloudinit_config:
+  kernel:
+  images:

@@ -1,0 +1,57 @@
+ARG ELIXIR_VERSION=1.17.2
+ARG OTP_VERSION=27.0.1
+ARG DEBIAN_VERSION=bullseye-20240722-slim
+ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
+
+FROM ${BUILDER_IMAGE}
+
+ARG CLOUD_HYPERVISOR_VERSION=v41.0
+
+RUN apt-get update -y && apt-get install -y curl git make dosfstools mtools libncurses5-dev libssl-dev bison flex libelf-dev bc libcap2-bin qemu-utils && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+##
+# Install cloud-hypervisor as pre-built binary
+##
+
+RUN curl -fsSL https://github.com/cloud-hypervisor/cloud-hypervisor/releases/download/${CLOUD_HYPERVISOR_VERSION}/cloud-hypervisor-static -o /usr/local/bin/cloud-hypervisor \
+    && chmod +x /usr/local/bin/cloud-hypervisor
+
+##
+# Build Linux Kernel
+##
+
+# Clone the Cloud Hypervisor Linux branch
+RUN git clone --depth 1 https://github.com/cloud-hypervisor/linux.git -b ch-6.2 linux-cloud-hypervisor
+WORKDIR linux-cloud-hypervisor
+
+# Use the x86-64 cloud-hypervisor kernel config to build your kernel for x86-64
+RUN curl -O https://raw.githubusercontent.com/cloud-hypervisor/cloud-hypervisor/main/resources/linux-config-x86_64
+RUN cp linux-config-x86_64 .config
+
+# Do native build of the x86-64 kernel
+RUN KCFLAGS="-Wa,-mx86-used-note=no" make bzImage -j `nproc`
+WORKDIR ..
+
+##
+# Create configuration disk
+##
+
+COPY cloudinit_config cloudinit_config
+
+RUN set -ex && \
+ rm -f /tmp/ubuntu-cloudinit.img && \
+ mkdosfs -n CIDATA -C ubuntu-cloudinit.img 8192 && \
+ mcopy -oi ubuntu-cloudinit.img -s cloudinit_config/user-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s cloudinit_config/meta-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s cloudinit_config/network-config ::
+
+##
+# Download disk image for storage
+##
+
+# Download image
+RUN curl -O https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+# Convert image to format compatible with cloud-hypervisor
+RUN qemu-img convert -p -f qcow2 -O raw focal-server-cloudimg-amd64.img focal-server-cloudimg-amd64.raw
+
+ENTRYPOINT ["/bin/bash"]
