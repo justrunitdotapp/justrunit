@@ -39,7 +39,6 @@ WORKDIR ..
 COPY cloudinit_config cloudinit_config
 
 RUN set -ex && \
- rm -f /images/ubuntu-cloudinit.img && \
  mkdosfs -n CIDATA -C ubuntu-cloudinit.img 8192 && \
  mcopy -oi /images/ubuntu-cloudinit.img -s cloudinit_config/user-data :: && \
  mcopy -oi /images/ubuntu-cloudinit.img -s cloudinit_config/meta-data :: && \
