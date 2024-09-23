@@ -84,13 +84,9 @@ services:
     devices:
       - /dev/kvm:/dev/kvm
     volumes:
-      - ./kernel:/kernel
       - ./cloudinit_config:/cloudinit_config
-      - ./images:/images
-    
+
 volumes:
   pgdata:
   miniodata:
   cloudinit_config:
-  kernel:
-  images:
