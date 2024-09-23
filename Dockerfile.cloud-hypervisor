@@ -37,6 +37,7 @@ WORKDIR ..
 ##
 
 COPY cloudinit_config cloudinit_config
+RUN mkdir -p images
 
 RUN set -ex && \
  mkdosfs -n CIDATA -C ubuntu-cloudinit.img 8192 && \
@@ -47,8 +48,6 @@ RUN set -ex && \
 ##
 # Download disk image for storage
 ##
-
-RUN mkdir -p images
 
 # Download image
 RUN curl -o images/focal-server-cloudimg-amd64.img https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
