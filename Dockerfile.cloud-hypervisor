@@ -39,19 +39,23 @@ WORKDIR ..
 COPY cloudinit_config cloudinit_config
 RUN mkdir -p images
 
+WORKDIR images
+
 RUN set -ex && \
  mkdosfs -n CIDATA -C ubuntu-cloudinit.img 8192 && \
- mcopy -oi /images/ubuntu-cloudinit.img -s cloudinit_config/user-data :: && \
- mcopy -oi /images/ubuntu-cloudinit.img -s cloudinit_config/meta-data :: && \
- mcopy -oi /images/ubuntu-cloudinit.img -s cloudinit_config/network-config ::
+ mcopy -oi ubuntu-cloudinit.img -s /cloudinit_config/user-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s /cloudinit_config/meta-data :: && \
+ mcopy -oi ubuntu-cloudinit.img -s /cloudinit_config/network-config ::
+
+WORKDIR ..
 
 ##
 # Download disk image for storage
 ##
 
 # Download image
-RUN curl -o images/focal-server-cloudimg-amd64.img https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+RUN curl -o focal-server-cloudimg-amd64.img https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
 # Convert image to format compatible with cloud-hypervisor
-RUN qemu-img convert -p -f qcow2 -O raw images/focal-server-cloudimg-amd64.img images/focal-server-cloudimg-amd64.raw
+RUN qemu-img convert -p -f qcow2 -O raw focal-server-cloudimg-amd64.img focal-server-cloudimg-amd64.raw
 
 ENTRYPOINT ["/bin/bash"]
