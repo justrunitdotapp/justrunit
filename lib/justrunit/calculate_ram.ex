@@ -1,4 +1,4 @@
-defmodule Justrunit.CalculateRam
+defmodule Justrunit.CalculateRam do
     @moduledoc """
         Calculates max. amount of RAM cloud hypervisor container can use and assigns it to a environmental variable every 60 seconds.
     """
