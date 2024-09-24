@@ -58,4 +58,4 @@ RUN curl -o focal-server-cloudimg-amd64.img https://cloud-images.ubuntu.com/foca
 # Convert image to format compatible with cloud-hypervisor
 RUN qemu-img convert -p -f qcow2 -O raw focal-server-cloudimg-amd64.img focal-server-cloudimg-amd64.raw
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "-c", "while true; do sleep 1000; done"]
