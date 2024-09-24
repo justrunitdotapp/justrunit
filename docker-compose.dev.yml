@@ -85,6 +85,12 @@ services:
       - /dev/kvm:/dev/kvm
     volumes:
       - ./cloudinit_config:/cloudinit_config
+    healthcheck:
+      test: ["CMD SHELL", "cloud-hypervisor --version"]
+      interval: 10s
+      retries: 5
+      start_peroid: 30s
+      timeout: 10s
 
 volumes:
   pgdata:
