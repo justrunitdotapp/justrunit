@@ -89,7 +89,7 @@ services:
       test: ["CMD SHELL", "cloud-hypervisor --version"]
       interval: 10s
       retries: 5
-      start_peroid: 30s
+      start_period: 30s
       timeout: 10s
 
 volumes:
