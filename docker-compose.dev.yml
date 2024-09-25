@@ -80,7 +80,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.cloud-hypervisor
-    privileged: true
+      privileged: true
+    deploy:
+      resources:
+        limits:
+          cpus: ${CPUS:-1.0}
+          memory: ${MEMORY-1g}
     devices:
       - /dev/kvm:/dev/kvm
     volumes:
