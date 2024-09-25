@@ -81,12 +81,7 @@ services:
       context: .
       dockerfile: Dockerfile.cloud-hypervisor
       privileged: true
-    deploy:
-      resources:
-        limits:
-          cpus: ${CPUS:-1.0}
-          memory: ${MEMORY:-1g}
-    devices:
+      devices:
       - /dev/kvm:/dev/kvm
     volumes:
       - ./cloudinit_config:/cloudinit_config
