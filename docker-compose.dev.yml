@@ -81,12 +81,12 @@ services:
       context: .
       dockerfile: Dockerfile.cloud-hypervisor
       privileged: true
-      devices:
+    devices:
       - /dev/kvm:/dev/kvm
     volumes:
       - ./cloudinit_config:/cloudinit_config
     healthcheck:
-      test: ["CMD-SHELL", "cloud-hypervisor --version"]
+      test: ["CMD-SHELL", "cloud-hypervisor --kernel ./linux-cloud-hypervisor/arch/x86/boot/compressed/vmlinux.bin --console off --serial tty	--disk path=focal-server-cloudimg-amd64.raw	--cmdline \"console=ttyS0 root=/dev/vda1 rw\" --cpus boot=4 --memory size=1024M --net \"tap=,mac=,ip=,mask=\""]
       interval: 10s
       retries: 5
       start_period: 30s
