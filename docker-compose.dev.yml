@@ -80,7 +80,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.cloud-hypervisor
-      privileged: true
     devices:
       - /dev/kvm:/dev/kvm
     volumes:
