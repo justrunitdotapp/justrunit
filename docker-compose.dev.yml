@@ -11,9 +11,9 @@ services:
         minio:
           condition: service_healthy
           restart: true
-        cloud_hypervisor:
-          condition: service_healthy
-          restart: true
+        #cloud-hypervisor:
+        #  condition: service_healthy
+        #  restart: true
     environment:
       - MIX_ENV=dev
       - PHX_HOST=localhost
@@ -80,16 +80,29 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.cloud-hypervisor
-    devices:
-      - /dev/kvm:/dev/kvm
+    #devices:
+      #- /dev/kvm:/dev/kvm
     volumes:
       - ./cloudinit_config:/cloudinit_config
-    healthcheck:
-      test: ["CMD-SHELL", "cloud-hypervisor --kernel ./linux-cloud-hypervisor/arch/x86/boot/compressed/vmlinux.bin --console off --serial tty	--disk path=focal-server-cloudimg-amd64.raw	--cmdline \"console=ttyS0 root=/dev/vda1 rw\" --cpus boot=4 --memory size=1024M --net \"tap=,mac=,ip=,mask=\""]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
+    #healthcheck:
+    #  test: ["CMD-SHELL", "cloud-hypervisor --kernel ./linux-cloud-hypervisor/arch/x86/boot/compressed/vmlinux.bin --console off --serial tty	--disk path=focal-server-cloudimg-amd64.raw	--cmdline \"console=ttyS0 root=/dev/vda1 rw\" --cpus boot=4 --memory size=1024M --net \"tap=,mac=,ip=,mask=\""]
+    #  interval: 10s
+    #  retries: 5
+    #  start_period: 30s
+    #  timeout: 10s
+
+  cloud-hypervisor-resources-limits-updater:
+    image: docker:cli
+    volumes:
+      - ./cloud_hypervisor_resources_limits_updater.sh:/cloud_hypervisor_resources_limits_updater.sh
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: ["bin/sh", "/cloud_hypervisor_resources_limits_updater.sh"]
+    #depends_on:
+    #  cloud-hypervisor:
+    #    condition: service_healthy
+    #    restart: true
+    environment:
+      - CH_UPDATE_INTERVAL=60
 
 volumes:
   pgdata:
