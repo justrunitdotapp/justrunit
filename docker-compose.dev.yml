@@ -62,7 +62,7 @@ services:
       start_period: 30s
       timeout: 10s  
       
-  setup_buckets:       
+  setup-buckets:       
     image: minio/mc
     depends_on:
       minio:
@@ -76,7 +76,7 @@ services:
       exit 0
       "
 
-  cloud_hypervisor:
+  cloud-hypervisor:
     build:
       context: .
       dockerfile: Dockerfile.cloud-hypervisor
